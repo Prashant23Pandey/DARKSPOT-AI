@@ -192,7 +192,7 @@ export function DetailedGapCards({ gaps, className = "" }: DetailedGapCardsProps
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleCopyAction(gap.gap_id, gap.suggested_action)}
+                      onClick={() => handleCopyAction(gap.gap_id, gap.suggested_action || gap.suggested_next_step)}
                       className="text-slate-600 hover:text-black p-0.5"
                       title="Copy action to clipboard"
                     >
@@ -204,7 +204,7 @@ export function DetailedGapCards({ gaps, className = "" }: DetailedGapCardsProps
                     </button>
                   </div>
                   <p className="text-xs text-slate-900 font-bold leading-snug">
-                    {gap.suggested_action}
+                    {gap.suggested_action || gap.suggested_next_step}
                   </p>
                 </div>
               </div>
