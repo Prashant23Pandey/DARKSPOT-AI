@@ -208,7 +208,7 @@ export function InformationDimensionMatrix({
                       <span className="text-xs text-rose-600 font-mono font-bold">0 sources found</span>
                     )}
 
-                    {dim.matchedClaims.length > 0 && (
+                    {dim.mappedClaims && dim.mappedClaims.length > 0 && (
                       <button
                         type="button"
                         onClick={() => setExpandedDimensionId(isExpanded ? null : dim.id)}
@@ -221,7 +221,7 @@ export function InformationDimensionMatrix({
                           </>
                         ) : (
                           <>
-                            <span>View {dim.matchedClaims.length} Claims</span>
+                            <span>View {dim.mappedClaims.length} Claims</span>
                             <ChevronDown className="w-3.5 h-3.5" />
                           </>
                         )}
@@ -231,14 +231,14 @@ export function InformationDimensionMatrix({
                 </div>
 
                 {/* Expandable Claims Drawer */}
-                {isExpanded && dim.matchedClaims.length > 0 && (
+                {isExpanded && dim.mappedClaims && dim.mappedClaims.length > 0 && (
                   <div className="mt-3 p-4 rounded-xl bg-slate-50 border-2 border-slate-900 space-y-2.5 animate-in fade-in-50">
                     <div className="text-[11px] font-mono font-bold uppercase text-slate-600 flex items-center gap-1.5">
                       <Quote className="w-3.5 h-3.5 text-slate-500" />
                       Grounded Claims for {dim.name}
                     </div>
                     <div className="space-y-2">
-                      {dim.matchedClaims.map((claim, cIdx) => (
+                      {dim.mappedClaims.map((claim: ExtractedClaim, cIdx: number) => (
                         <div
                           key={claim.claim_id || cIdx}
                           className="p-3 rounded-lg bg-white border border-slate-300 text-xs space-y-1 shadow-sm"
@@ -246,7 +246,7 @@ export function InformationDimensionMatrix({
                           <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
                             <span className="font-bold text-slate-900">{claim.source_title || claim.source_id}</span>
                             <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-bold">
-                              Confidence: {Math.round(claim.extraction_confidence * 100)}%
+                              Confidence: {Math.round(claim.extraction_confidence > 1 ? claim.extraction_confidence : claim.extraction_confidence * 100)}%
                             </span>
                           </div>
                           <p className="text-slate-800 font-semibold italic">
