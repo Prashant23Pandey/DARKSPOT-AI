@@ -27,6 +27,7 @@ export interface InvestigationRecord {
   sources: SourceItem[];
   result: DarkspotAnalysisResponse;
   isStarred?: boolean;
+  is_demo?: boolean;
   tags?: string[];
 }
 
