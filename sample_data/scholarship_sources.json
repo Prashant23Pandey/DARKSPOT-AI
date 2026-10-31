@@ -1,0 +1,82 @@
+{
+  "project": "digital-dark-spot",
+  "domain": "University STEM Scholarship Eligibility Audit",
+  "description": "Mock cross-institutional sources containing subtle discrepancies, omissions, and outdated application deadlines for demonstration.",
+  "sources": [
+    {
+      "id": "Source 1",
+      "title": "Admissions Merit Scholarship Bulletin",
+      "url": "https://university.edu/scholarships/merit-stem-bulletin",
+      "type": "Web Article",
+      "text": "Merit STEM Scholarship Program: Applicants must demonstrate academic excellence with a minimum cumulative GPA of 3.50 and maintain full-time undergraduate enrollment (at least 12 credit hours per term). The award provides $5,000 disbursed on a semester-by-semester basis directly to university tuition and student fees. For household need verification, students must submit completed 2024 Federal Tax Returns to the financial aid portal prior to June 1."
+    },
+    {
+      "id": "Source 2",
+      "title": "Financial Aid Verification Requirements FAQ",
+      "url": "https://university.edu/finaid/verification-faq",
+      "type": "Policy FAQ",
+      "text": "Financial Aid Verification: All merit and need-based applicants must maintain a 3.50 GPA across consecutive terms. To verify household income eligibility for scholarship assistance, applicants must upload their parents' official 2025 W-2 Wage and Tax Statements. Documents submitted via postal mail or unencrypted email will be rejected immediately."
+    },
+    {
+      "id": "Source 3",
+      "title": "Archived Departmental Application Portal",
+      "url": "https://archive.university.edu/stem-grants/2023-cycle",
+      "type": "Archived Notice",
+      "text": "STEM Excellence Award Portal: The application cycle for the 2023-2024 academic year concluded on March 15, 2023. Late submissions are not evaluated under any circumstances. Inquiries regarding past cohorts may be directed to archive-stem@university.edu."
+    }
+  ],
+  "expected_truth_radar": {
+    "structured_summary": [
+      {
+        "fact": "Eligibility requires a minimum 3.5 GPA and active full-time enrollment.",
+        "sources": ["Source 1", "Source 2"]
+      },
+      {
+        "fact": "Awards provide $5,000 disbursed per semester directly to tuition accounts.",
+        "sources": ["Source 1"]
+      }
+    ],
+    "information_gaps": [
+      {
+        "gap_title": "Renewal Policy Omitted",
+        "description": "None of the provided sources specify if the scholarship renews automatically for sophomore year or if re-application is mandatory.",
+        "severity": "HIGH",
+        "signal_label": "Potential Gap — Unverified in provided sources"
+      },
+      {
+        "gap_title": "Summer Course Coverage Ambiguity",
+        "description": "Documents fail to state whether tuition credits apply to accelerated summer term coursework.",
+        "severity": "MEDIUM",
+        "signal_label": "Potential Gap — Unverified in provided sources"
+      }
+    ],
+    "conflicts": [
+      {
+        "issue": "Income Documentation Discrepancy",
+        "claim_a": "Source 1 states tax returns from 2024 are required for household income verification.",
+        "claim_b": "Source 2 states W-2 forms from 2025 are required instead.",
+        "sources": ["Source 1", "Source 2"]
+      }
+    ],
+    "outdated_warnings": [
+      {
+        "source": "Source 3",
+        "warning": "Page references the 2023-2024 application cycle deadline of March 15th."
+      }
+    ],
+    "verification_checklist": [
+      {
+        "priority": 1,
+        "action": "Confirm renewal terms and re-application criteria on the official university portal."
+      },
+      {
+        "priority": 2,
+        "action": "Contact financial aid office regarding required tax documents (2024 1040 vs 2025 W-2)."
+      },
+      {
+        "priority": 3,
+        "action": "Verify current academic year deadlines with the departmental coordinator."
+      }
+    ]
+  }
+}

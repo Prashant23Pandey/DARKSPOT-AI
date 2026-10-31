@@ -1,0 +1,39 @@
+{
+  "sample_site": "C:\\Users\\prash\\OneDrive\\Desktop\\New folder\\tests\\fixtures\\sample_site",
+  "urls": [
+    "http://127.0.0.1:56937/stem-2024.html",
+    "http://127.0.0.1:56937/financial-aid-faq.html",
+    "http://127.0.0.1:56937/archived-portal.html"
+  ],
+  "scraped": [
+    {
+      "url": "http://127.0.0.1:56937/stem-2024.html",
+      "success": true,
+      "title": "STEM Scholarship Bulletin 2024",
+      "chars": 283,
+      "preview": "STEM Excellence Scholarship\nEligibility requires a minimum 3.5 cumulative GPA and full-time enrollment in an accredited STEM program.\nThe award covers $5,000 disbursed per semester directly to tuition fees.\nVerification requires official 20",
+      "error": null
+    },
+    {
+      "url": "http://127.0.0.1:56937/financial-aid-faq.html",
+      "success": true,
+      "title": "Financial Aid FAQ",
+      "chars": 258,
+      "preview": "To qualify for the merit award, recipients must maintain a 3.5 GPA throughout the academic year.\nFor family income thresholds, applicants must submit official 2025 W-2 wage statements.\nRenewal is not automatic and requires a separate applic",
+      "error": null
+    },
+    {
+      "url": "http://127.0.0.1:56937/archived-portal.html",
+      "success": true,
+      "title": "Archived Application Portal",
+      "chars": 187,
+      "preview": "Archived Scholarship Cycle\nApplication cycle 2023-2024 has closed.\nAll submissions must have been completed prior to March 15, 2023.\nThis portal is retained for historical reference only.",
+      "error": null
+    }
+  ],
+  "source_ids": [
+    "Source 1",
+    "Source 2",
+    "Source 3"
+  ]
+}
