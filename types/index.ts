@@ -139,6 +139,9 @@ export interface DetailedInformationGap {
   sources_reviewed: string[];
   evidence_coverage: "none" | "partial" | "unclear" | "conflicting";
   suggested_next_step: string;
+  suggested_action?: string;
+  description?: string;
+  why_verification_needed?: string;
   confidence_level: number; // 0 - 100
   priority: GapPriority;
   signal_label: string;
