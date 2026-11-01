@@ -46,26 +46,32 @@ export function Sidebar({ className, onClose }: SidebarProps) {
         className
       )}
     >
-      {/* Brand Header — Styled like AEGIS AIR */}
+      {/* Brand Header — Styled with Shinchan & DEVENGERS Hackathon Identity */}
       <div className="p-4 border-b-2 border-slate-900 bg-white">
         <Link
           href="/"
           onClick={onClose}
           className="flex flex-col group py-0.5"
         >
-          <div className="flex items-center gap-2">
-            <span className="font-black text-xl tracking-tight text-slate-950 font-display group-hover:text-[#ec4899] transition-colors">
-              DARKSPOT
-            </span>
-            <span className="bg-[#ec4899] text-white border-2 border-slate-900 text-[10px] font-black px-2 py-0.5 rounded-lg shadow-[2px_2px_0px_#0f172a] font-display">
-              AI
-            </span>
-            <span className="bg-[#fde047] text-slate-950 border-2 border-slate-900 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_#0f172a] uppercase tracking-wider">
-              ONLINE
-            </span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl border-2 border-slate-900 bg-[#ffd84d] overflow-hidden shrink-0 shadow-[1.5px_1.5px_0px_#0f172a]">
+              <img
+                src="/assets/shinchan/shinchan/shinchan_avatar.png"
+                alt="Shinchan Mascot"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-black text-lg tracking-tight text-slate-950 font-display group-hover:text-[#e85a9b] transition-colors">
+                DARKSPOT
+              </span>
+              <span className="bg-[#e85a9b] text-white border-2 border-slate-900 text-[9px] font-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_#0f172a] font-display">
+                AI
+              </span>
+            </div>
           </div>
-          <span className="text-[11px] text-slate-600 font-sans font-medium tracking-tight mt-1 leading-snug">
-            Tactical Gap Detection & Intelligence Surveillance
+          <span className="text-[10px] text-slate-600 font-sans font-medium tracking-tight mt-1.5 leading-snug">
+            Shinchan Online Hackathon &bull; DEVENGERS
           </span>
         </Link>
       </div>
