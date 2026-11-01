@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TopTicker } from "@/components/layout/top-ticker";
+import { SquadSection } from "@/components/shinchan/squad-section";
 
 export default function LandingPage() {
   return (
