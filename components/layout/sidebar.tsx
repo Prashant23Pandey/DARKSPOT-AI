@@ -46,29 +46,27 @@ export function Sidebar({ className, onClose }: SidebarProps) {
         className
       )}
     >
-      {/* Brand Header */}
-      <div className="p-4 border-b-2 border-slate-900 bg-slate-50">
+      {/* Brand Header — Styled like AEGIS AIR */}
+      <div className="p-4 border-b-2 border-slate-900 bg-white">
         <Link
           href="/"
           onClick={onClose}
-          className="flex items-center gap-2.5 group"
+          className="flex flex-col group py-0.5"
         >
-          <div className="h-9 w-9 rounded-xl bg-slate-900 border-2 border-slate-900 flex items-center justify-center text-white shadow-[2px_2px_0px_#fde047] group-hover:scale-105 transition-transform">
-            <Radar className="w-5 h-5 text-[#fde047]" />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base tracking-tight text-slate-900 font-display">
-                DARKSPOT
-              </span>
-              <span className="bg-[#ec4899] text-white border-2 border-slate-900 text-[10px] font-black px-1.5 py-0.2 rounded-md shadow-[1px_1px_0px_#0f172a]">
-                AI
-              </span>
-            </div>
-            <span className="text-[10px] text-slate-500 font-mono font-semibold tracking-tight">
-              Information Gap Platform
+          <div className="flex items-center gap-2">
+            <span className="font-black text-xl tracking-tight text-slate-950 font-display group-hover:text-[#ec4899] transition-colors">
+              DARKSPOT
+            </span>
+            <span className="bg-[#ec4899] text-white border-2 border-slate-900 text-[10px] font-black px-2 py-0.5 rounded-lg shadow-[2px_2px_0px_#0f172a] font-display">
+              AI
+            </span>
+            <span className="bg-[#fde047] text-slate-950 border-2 border-slate-900 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_#0f172a] uppercase tracking-wider">
+              ONLINE
             </span>
           </div>
+          <span className="text-[11px] text-slate-600 font-sans font-medium tracking-tight mt-1 leading-snug">
+            Tactical Gap Detection & Intelligence Surveillance
+          </span>
         </Link>
       </div>
 

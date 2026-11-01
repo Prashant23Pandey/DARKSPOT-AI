@@ -21,10 +21,15 @@ st.set_page_config(
 # Custom High-Aesthetic Styling
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Unbounded:wght@400;600;700;800;900&display=swap');
     
     html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Unbounded', sans-serif !important;
+        letter-spacing: -0.02em;
     }
     
     .main-header {
@@ -46,6 +51,7 @@ st.markdown("""
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.04em;
+        font-family: 'Space Mono', monospace;
     }
     .source-pill {
         display: inline-flex;
@@ -55,7 +61,7 @@ st.markdown("""
         border: 1px solid rgba(99, 102, 241, 0.35);
         border-radius: 6px;
         padding: 2px 8px;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: 'Space Mono', monospace;
         font-size: 0.78rem;
         font-weight: 500;
         margin-right: 6px;

@@ -17,17 +17,17 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-950 text-slate-100">
-      <div className="max-w-md w-full p-8 rounded-2xl border border-rose-500/40 bg-slate-900/80 backdrop-blur-xl text-center space-y-4 shadow-2xl">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-950/70 border border-rose-500/30 text-rose-400">
-          <AlertTriangle className="h-7 w-7" />
+    <div className="min-h-screen flex items-center justify-center p-6 bg-[#fafaf8] text-slate-950 font-sans">
+      <div className="max-w-md w-full p-8 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a] text-center space-y-4">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-100 border-2 border-slate-900 text-rose-600 shadow-[3px_3px_0px_#0f172a]">
+          <AlertTriangle className="h-8 w-8 text-rose-600" />
         </div>
 
-        <h2 className="text-xl font-bold tracking-tight text-white">
+        <h2 className="text-2xl font-display font-black tracking-tight text-slate-950">
           Investigation Exception Caught
         </h2>
 
-        <p className="text-xs sm:text-sm text-slate-400 font-mono bg-slate-950 p-3 rounded-lg border border-slate-800 break-words text-left">
+        <p className="text-xs sm:text-sm text-rose-950 font-mono bg-rose-50 p-3 rounded-xl border-2 border-rose-300 break-words text-left font-medium">
           {error.message || "An unexpected error disrupted the intelligence pipeline."}
         </p>
 
@@ -36,21 +36,21 @@ export default function ErrorBoundary({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => (window.location.href = "/")}
-            className="text-xs"
+            onClick={() => (window.location.href = "/dashboard")}
+            className="text-xs font-display font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]"
           >
-            <Home className="w-3.5 h-3.5 mr-1.5" />
+            <Home className="w-4 h-4 mr-1.5" />
             Reset Console
           </Button>
 
           <Button
             type="button"
-            variant="default"
+            variant="yellow"
             size="sm"
             onClick={() => reset()}
-            className="text-xs"
+            className="text-xs font-display font-bold"
           >
-            <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+            <RotateCcw className="w-4 h-4 mr-1.5" />
             Try Again
           </Button>
         </div>

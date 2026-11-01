@@ -73,9 +73,10 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["'Plus Jakarta Sans'", "Inter", "system-ui", "-apple-system", "sans-serif"],
-        display: ["'Outfit'", "'Plus Jakarta Sans'", "sans-serif"],
-        mono: ["'JetBrains Mono'", "monospace"],
+        display: ["'Unbounded'", "sans-serif"],
+        sans: ["'Space Grotesk'", "sans-serif"],
+        mono: ["'Space Mono'", "monospace"],
+        tech: ["'Unbounded'", "sans-serif"],
       },
       boxShadow: {
         neo: "3px 3px 0px #0f172a",

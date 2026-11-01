@@ -157,10 +157,13 @@ export default function InvestigationWorkspacePage() {
         {/* Dossier Header Card */}
         <div className="p-6 sm:p-8 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a] space-y-4">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
-            <div className="space-y-2 flex-1">
+            <div className="space-y-2.5 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
+                <span className="bg-[#a3e635] text-slate-950 border-2 border-slate-900 font-mono font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_#0f172a] uppercase tracking-wider">
+                  LIVE_API
+                </span>
                 <Badge variant="cyan" className="font-mono text-[10px]">
-                  Dossier ID: {investigation.id}
+                  DOSSIER: {investigation.id}
                 </Badge>
                 <span className="text-[11px] font-mono font-bold text-slate-600 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-300">
                   <Calendar className="w-3 h-3 text-slate-500" />
@@ -176,12 +179,17 @@ export default function InvestigationWorkspacePage() {
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black font-display text-slate-950 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-black font-display text-slate-950 tracking-tight">
                 {investigation.topic}
               </h1>
 
+              {/* Telemetry line in Space Mono (matching user reference) */}
+              <div className="text-xs sm:text-sm font-mono text-slate-700 font-medium tracking-tight">
+                Ground Station: Digital Dark Spot Engine ({investigation.sources.length} Ingested Streams) (Coverage: {result.metrics.gapCount} Gaps, {result.metrics.conflictCount} Conflicts)
+              </div>
+
               {investigation.researchQuestion && (
-                <p className="text-xs sm:text-sm text-slate-800 font-semibold font-sans">
+                <p className="text-xs sm:text-sm text-slate-800 font-semibold font-sans pt-1">
                   <span className="text-[#db2777] font-mono text-xs uppercase mr-1.5 font-bold">Research Question:</span>
                   {investigation.researchQuestion}
                 </p>
@@ -193,6 +201,11 @@ export default function InvestigationWorkspacePage() {
                   {investigation.objective}
                 </p>
               )}
+
+              {/* Italic Contextual Notice in Space Mono (matching user reference) */}
+              <div className="pt-2 text-xs font-mono italic text-slate-600">
+                Notice: Gap & conflict detections are contextual; does not constitute automatic legal determination.
+              </div>
             </div>
 
             {/* Quick Source Summary Pill */}

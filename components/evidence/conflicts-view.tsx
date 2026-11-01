@@ -20,8 +20,8 @@ export function ConflictsView({ conflicts = [], detailedConflicts }: ConflictsVi
 
   if (!conflicts || conflicts.length === 0) {
     return (
-      <Card className="border-slate-800 bg-slate-950/60">
-        <CardContent className="p-8 text-center text-slate-400 text-sm">
+      <Card className="border-2 border-slate-900 bg-white shadow-[3px_3px_0px_#0f172a]">
+        <CardContent className="p-8 text-center text-slate-600 font-medium text-sm">
           No conflicting claims detected between sources. Information streams appear aligned.
         </CardContent>
       </Card>
@@ -29,39 +29,39 @@ export function ConflictsView({ conflicts = [], detailedConflicts }: ConflictsVi
   }
 
   return (
-    <Card className="border-slate-800 bg-slate-950/70 backdrop-blur-md">
-      <CardHeader className="pb-3">
+    <Card className="border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a]">
+      <CardHeader className="pb-3 border-b-2 border-slate-100">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <ArrowRightLeft className="w-4 h-4 text-amber-400" />
-              <CardTitle className="text-lg font-bold">
+              <ArrowRightLeft className="w-5 h-5 text-amber-600" />
+              <CardTitle className="text-xl font-display font-black text-slate-950">
                 Contradictory Claims & Discrepancies
               </CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="text-slate-600 font-medium">
               Direct factual, numerical, or timeline inconsistencies discovered between sources.
             </CardDescription>
           </div>
-          <Badge variant="medium">
+          <Badge variant="yellow" className="font-bold">
             {conflicts.length} Contradictions
           </Badge>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-4">
         {conflicts.map((conflict, idx) => (
           <div
             key={idx}
-            className="rounded-xl border border-amber-500/30 bg-slate-900/40 p-4 space-y-3"
+            className="rounded-xl border-2 border-slate-900 bg-[#fefce8] p-4 space-y-3 shadow-[3px_3px_0px_#0f172a]"
           >
             {/* Conflict Issue Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b-2 border-amber-200">
               <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-amber-950 border border-amber-500/50 text-[10px] font-mono font-bold text-amber-400">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-[11px] font-mono font-black text-[#fde047] shadow-[1px_1px_0px_#fde047]">
                   !
                 </span>
-                <span className="font-semibold text-sm text-slate-100">
+                <span className="font-display font-bold text-sm text-slate-950">
                   {conflict.issue}
                 </span>
               </div>
@@ -69,7 +69,7 @@ export function ConflictsView({ conflicts = [], detailedConflicts }: ConflictsVi
                 {conflict.sources.map((src, sIdx) => (
                   <span
                     key={sIdx}
-                    className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-amber-300 border border-amber-500/30"
+                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white text-slate-900 border border-slate-900 shadow-[1px_1px_0px_#0f172a]"
                   >
                     {src}
                   </span>
@@ -80,31 +80,31 @@ export function ConflictsView({ conflicts = [], detailedConflicts }: ConflictsVi
             {/* Split Comparison Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
               {/* Claim A */}
-              <div className="p-3 rounded-lg border border-slate-800 bg-slate-950/60 space-y-1">
+              <div className="p-3.5 rounded-xl border-2 border-slate-900 bg-white space-y-1 shadow-[2px_2px_0px_#0f172a]">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-blue-700 font-black">
                     Claim A
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-[10px] font-mono font-bold text-slate-600">
                     {conflict.sources[0] || "Source A"}
                   </span>
                 </div>
-                <p className="text-xs text-slate-200 leading-relaxed">
+                <p className="text-xs text-slate-900 font-medium leading-relaxed">
                   {conflict.claim_a}
                 </p>
               </div>
 
               {/* Claim B */}
-              <div className="p-3 rounded-lg border border-slate-800 bg-slate-950/60 space-y-1">
+              <div className="p-3.5 rounded-xl border-2 border-slate-900 bg-white space-y-1 shadow-[2px_2px_0px_#0f172a]">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-rose-400 font-bold">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-rose-700 font-black">
                     Claim B
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-[10px] font-mono font-bold text-slate-600">
                     {conflict.sources[1] || "Source B"}
                   </span>
                 </div>
-                <p className="text-xs text-slate-200 leading-relaxed">
+                <p className="text-xs text-slate-900 font-medium leading-relaxed">
                   {conflict.claim_b}
                 </p>
               </div>

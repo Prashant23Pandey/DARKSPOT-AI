@@ -503,29 +503,33 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
     <WorkspaceLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header Breadcrumb & Benchmark Quick Presets */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1b1f2e] pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-slate-900 pb-5">
           <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-              <Radar className="w-5 h-5 text-violet-400" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fde047] border-2 border-slate-900 text-slate-950 text-xs font-mono font-bold shadow-[2px_2px_0px_#0f172a] mb-1">
+              <span className="h-2 w-2 rounded-full bg-[#ec4899] animate-pulse" />
+              INVESTIGATION WORKBENCH
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-display font-black text-slate-950 tracking-tight flex items-center gap-2">
+              <Radar className="w-6 h-6 text-[#ec4899]" />
               New Research & Source Ingestion
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Collect and cross-examine multi-source web pages, policies, and research text.
+            <p className="text-xs sm:text-sm text-slate-600 font-medium">
+              Collect, crawl, and cross-examine multi-source web pages, policies, and research text.
             </p>
           </div>
 
           {/* Benchmark Preset Selectors */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] font-mono text-slate-500 flex items-center gap-1">
-              <BookOpen className="w-3 h-3 text-violet-400" />
-              Sample Benchmarks:
+            <span className="text-[11px] font-mono font-bold text-slate-700 flex items-center gap-1">
+              <BookOpen className="w-3.5 h-3.5 text-[#ec4899]" />
+              Presets:
             </span>
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => loadPreset("scholarship")}
-              className="text-xs h-7 px-2.5 bg-[#0e1017] border-[#222736] hover:border-violet-500/50"
+              className="text-xs h-8 px-3 font-display font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-[#fde047]"
             >
               Scholarship
             </Button>
@@ -534,7 +538,7 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
               variant="outline"
               size="sm"
               onClick={() => loadPreset("ai_safety")}
-              className="text-xs h-7 px-2.5 bg-[#0e1017] border-[#222736] hover:border-violet-500/50"
+              className="text-xs h-8 px-3 font-display font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-[#cffafe]"
             >
               AI Safety
             </Button>
@@ -543,7 +547,7 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
               variant="outline"
               size="sm"
               onClick={() => loadPreset("clinical")}
-              className="text-xs h-7 px-2.5 bg-[#0e1017] border-[#222736] hover:border-violet-500/50"
+              className="text-xs h-8 px-3 font-display font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-[#dcfce7]"
             >
               Clinical
             </Button>
@@ -552,57 +556,58 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
 
         {/* Form Error Banner */}
         {formErrors.form && (
-          <div className="p-4 rounded-xl border border-rose-500/40 bg-rose-950/30 text-rose-300 text-xs flex items-start gap-3">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-xl border-2 border-rose-600 bg-rose-50 text-rose-900 text-xs flex items-start gap-3 shadow-[3px_3px_0px_#e11d48]">
+            <AlertCircle className="w-5 h-5 shrink-0 text-rose-600 mt-0.5" />
             <div>
-              <div className="font-bold">Investigation Submission Error</div>
-              <p className="text-rose-400 text-xs">{formErrors.form}</p>
+              <div className="font-display font-bold text-sm text-rose-950">Investigation Submission Error</div>
+              <p className="text-rose-800 text-xs mt-0.5 font-medium">{formErrors.form}</p>
             </div>
           </div>
         )}
 
         <form onSubmit={handleAnalyze} className="space-y-6">
           {/* Section 1: Research Scope & Meta */}
-          <div className="p-5 rounded-xl border border-[#1b1f2e] bg-[#0c0e15] space-y-4">
-            <div className="flex items-center justify-between border-b border-[#181c28] pb-3">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-                01. Research Scope & Parameters
+          <div className="p-5 sm:p-6 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a] space-y-4">
+            <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-[#fde047] border border-slate-900 font-black">01</span>
+                Research Scope & Parameters
               </span>
-              <span className="text-[10px] font-mono text-slate-500">All fields validated strictly</span>
+              <span className="text-[11px] font-mono text-slate-500 font-semibold">Strict Parameter Validation</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Investigation Title */}
               <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-xs font-mono uppercase tracking-wider text-slate-300 font-semibold flex items-center justify-between">
+                <label className="text-xs font-mono uppercase tracking-wider text-slate-800 font-bold flex items-center justify-between">
                   <span>Investigation Title *</span>
-                  {formErrors.title && <span className="text-rose-400 text-xs normal-case">{formErrors.title}</span>}
+                  {formErrors.title && <span className="text-rose-600 text-xs normal-case font-bold">{formErrors.title}</span>}
                 </label>
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. 2025-2026 Undergraduate Merit Scholarship Renewal Audit"
-                  className="h-9 bg-[#10131d] border-[#1e2333] text-xs text-slate-100 focus-visible:border-violet-500"
+                  className="h-10 bg-slate-50 border-2 border-slate-900 text-xs font-medium text-slate-950 shadow-[2px_2px_0px_#0f172a] focus-visible:bg-white"
                 />
               </div>
 
               {/* Research Topic */}
               <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-xs font-mono uppercase tracking-wider text-slate-300 font-semibold flex items-center justify-between">
+                <label className="text-xs font-mono uppercase tracking-wider text-slate-800 font-bold flex items-center justify-between">
                   <span>Research Topic / Target Assertion *</span>
-                  {formErrors.topic && <span className="text-rose-400 text-xs normal-case">{formErrors.topic}</span>}
+                  {formErrors.topic && <span className="text-rose-600 text-xs normal-case font-bold">{formErrors.topic}</span>}
                 </label>
                 <Input
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   placeholder="e.g. Undergraduate Merit Scholarship Renewal Protocols"
-                  className="h-9 bg-[#10131d] border-[#1e2333] text-xs text-slate-100 focus-visible:border-violet-500"
+                  className="h-10 bg-slate-50 border-2 border-slate-900 text-xs font-medium text-slate-950 shadow-[2px_2px_0px_#0f172a] focus-visible:bg-white"
                 />
               </div>
 
               {/* Primary Research Question */}
               <div className="space-y-1.5">
-                <label className="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold">
+                <label className="text-xs font-mono uppercase tracking-wider text-slate-700 font-bold">
                   Primary Research Question
                 </label>
                 <Textarea
@@ -610,13 +615,13 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="What are the exact continuity conditions, documentation deadlines, and renewal terms?"
                   rows={2}
-                  className="bg-[#10131d] border-[#1e2333] text-xs text-slate-100"
+                  className="bg-slate-50 border-2 border-slate-900 text-xs font-medium text-slate-950 shadow-[2px_2px_0px_#0f172a] focus-visible:bg-white"
                 />
               </div>
 
               {/* Research Objective */}
               <div className="space-y-1.5">
-                <label className="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold">
+                <label className="text-xs font-mono uppercase tracking-wider text-slate-700 font-bold">
                   Research Objective
                 </label>
                 <Textarea
@@ -624,35 +629,36 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                   onChange={(e) => setObjective(e.target.value)}
                   placeholder="Identify discrepancies in required GPA, documentation tax years, and omitted annual re-application procedures."
                   rows={2}
-                  className="bg-[#10131d] border-[#1e2333] text-xs text-slate-100"
+                  className="bg-slate-50 border-2 border-slate-900 text-xs font-medium text-slate-950 shadow-[2px_2px_0px_#0f172a] focus-visible:bg-white"
                 />
               </div>
 
               {/* Optional Context */}
               <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold">
+                <label className="text-xs font-mono uppercase tracking-wider text-slate-700 font-bold">
                   Optional Context & Scope Constraints
                 </label>
                 <Input
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
                   placeholder="e.g. Focus on undergraduates matriculating in Fall 2024 or later; exclude athletic endowments."
-                  className="h-8 bg-[#10131d] border-[#1e2333] text-xs text-slate-100"
+                  className="h-9 bg-slate-50 border-2 border-slate-900 text-xs font-medium text-slate-950 shadow-[2px_2px_0px_#0f172a] focus-visible:bg-white"
                 />
               </div>
             </div>
           </div>
 
           {/* Section 2: Optional Search Engine Integration */}
-          <div className="p-5 rounded-xl border border-[#1b1f2e] bg-[#0c0e15] space-y-4">
-            <div className="flex items-center justify-between border-b border-[#181c28] pb-3">
+          <div className="p-5 sm:p-6 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a] space-y-4">
+            <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
               <div className="space-y-0.5">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                  <Search className="w-3.5 h-3.5 text-violet-400" />
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded bg-[#cffafe] border border-slate-900 font-black">02</span>
+                  <Search className="w-4 h-4 text-slate-900" />
                   <span>Optional Search Integration</span>
                 </span>
-                <p className="text-[11px] text-slate-500">
-                  Search across public search providers if configured (Tavily, SerpApi). Never invents or hallucinates results.
+                <p className="text-[11px] text-slate-600 font-medium">
+                  Search across public search providers if configured (Tavily, SerpApi). Zero hallucinations.
                 </p>
               </div>
             </div>
@@ -662,7 +668,7 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search web for policy docs or regulatory standards..."
-                className="h-9 bg-[#10131d] border-[#1e2333] text-xs text-slate-100 flex-1"
+                className="h-10 bg-slate-50 border-2 border-slate-900 text-xs font-medium text-slate-950 shadow-[2px_2px_0px_#0f172a] flex-1 focus-visible:bg-white"
               />
               <Button
                 type="button"
@@ -670,38 +676,38 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                 size="sm"
                 onClick={handleExecuteSearch}
                 disabled={isSearching}
-                className="h-9 text-xs border-[#222736]"
+                className="h-10 text-xs font-display font-bold bg-[#fde047] text-slate-950 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-[#facc15]"
               >
-                {isSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Query Provider"}
+                {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : "Query Provider"}
               </Button>
             </div>
 
             {searchMessage && (
-              <div className="p-3 rounded-lg bg-[#11131c] border border-[#1f2434] text-xs text-slate-400 flex items-start gap-2">
-                <Info className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
-                <span>{searchMessage}</span>
+              <div className="p-3 rounded-xl bg-amber-50 border-2 border-amber-300 text-xs text-amber-900 flex items-start gap-2 shadow-[2px_2px_0px_#f59e0b]">
+                <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <span className="font-medium">{searchMessage}</span>
               </div>
             )}
 
             {searchResults.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-[#181c28]">
-                <span className="text-[11px] font-mono text-slate-400 uppercase">Search Results:</span>
+              <div className="space-y-2 pt-2 border-t-2 border-slate-100">
+                <span className="text-[11px] font-mono text-slate-700 font-bold uppercase">Search Results:</span>
                 <div className="grid grid-cols-1 gap-2">
                   {searchResults.map((res, sIdx) => (
                     <div
                       key={sIdx}
-                      className="p-3 rounded-lg border border-[#1f2434] bg-[#11131c] flex items-center justify-between gap-3 text-xs"
+                      className="p-3 rounded-xl border-2 border-slate-900 bg-slate-50 flex items-center justify-between gap-3 text-xs shadow-[2px_2px_0px_#0f172a]"
                     >
                       <div className="space-y-0.5 min-w-0 flex-1">
-                        <div className="font-semibold text-slate-200 truncate">{res.title}</div>
-                        <div className="text-[10px] text-slate-500 font-mono truncate">{res.url}</div>
+                        <div className="font-bold text-slate-950 truncate font-display">{res.title}</div>
+                        <div className="text-[10px] text-slate-600 font-mono truncate">{res.url}</div>
                       </div>
                       <Button
                         type="button"
                         size="sm"
                         variant="outline"
                         onClick={() => handleAddUrl(res.url)}
-                        className="text-xs h-7 shrink-0"
+                        className="text-xs h-7 shrink-0 font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[1px_1px_0px_#0f172a] hover:bg-[#dcfce7]"
                       >
                         + Add Stream
                       </Button>
@@ -713,28 +719,29 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
           </div>
 
           {/* Section 3: Source Collection Features (URLs & Text) */}
-          <div className="p-5 rounded-xl border border-[#1b1f2e] bg-[#0c0e15] space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#181c28] pb-3">
+          <div className="p-5 sm:p-6 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a] space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-slate-100 pb-3">
               <div>
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-                  02. Source Collection & Evidence Streams
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded bg-[#ec4899] text-white border border-slate-900 font-black">03</span>
+                  Source Collection & Evidence Streams
                 </span>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-slate-600 font-medium">
                   Protected against SSRF and private network attacks. Server-side text and metadata extraction.
                 </p>
               </div>
 
               {formErrors.sources && (
-                <span className="text-rose-400 text-xs font-mono">{formErrors.sources}</span>
+                <span className="text-rose-600 text-xs font-mono font-bold">{formErrors.sources}</span>
               )}
             </div>
 
             {/* URL Ingestion Interface */}
             <div className="space-y-2">
-              <label className="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold flex items-center justify-between">
+              <label className="text-xs font-mono uppercase tracking-wider text-slate-800 font-bold flex items-center justify-between">
                 <span>Add Webpage URL</span>
                 {urlValidationError && (
-                  <span className="text-rose-400 text-xs normal-case">{urlValidationError}</span>
+                  <span className="text-rose-600 text-xs normal-case font-bold">{urlValidationError}</span>
                 )}
               </label>
 
@@ -743,16 +750,16 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
                   placeholder="https://example.edu/financial-aid/renewal-guidelines"
-                  className="h-9 bg-[#10131d] border-[#1e2333] text-xs text-slate-100 flex-1"
+                  className="h-10 bg-slate-50 border-2 border-slate-900 text-xs font-medium text-slate-950 shadow-[2px_2px_0px_#0f172a] flex-1 focus-visible:bg-white"
                 />
                 <Button
                   type="button"
                   size="sm"
                   variant="outline"
                   onClick={() => handleAddUrl()}
-                  className="h-9 px-3 text-xs border-[#222736] hover:border-violet-500/50"
+                  className="h-10 px-3 text-xs font-display font-bold bg-[#cffafe] text-slate-950 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-cyan-200"
                 >
-                  <Globe className="w-3.5 h-3.5 mr-1 text-violet-400" />
+                  <Globe className="w-4 h-4 mr-1 text-slate-950" />
                   Fetch & Add URL
                 </Button>
               </div>
@@ -760,36 +767,36 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
 
             {/* Collected Sources List */}
             <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+              <div className="flex items-center justify-between text-xs font-mono text-slate-800 font-bold">
                 <span>Active Source Dossier Streams ({sources.length})</span>
                 <button
                   type="button"
                   onClick={handleAddManualTextSource}
-                  className="text-violet-400 hover:text-violet-300 flex items-center gap-1 text-xs"
+                  className="px-2.5 py-1 rounded-md bg-[#ede9fe] border-2 border-slate-900 text-purple-900 shadow-[1px_1px_0px_#0f172a] hover:bg-purple-200 flex items-center gap-1 text-xs font-bold"
                 >
-                  <Plus className="w-3 h-3" />
+                  <Plus className="w-3.5 h-3.5" />
                   Add Manual Text Stream
                 </button>
               </div>
 
-              {sources.map((s, idx) => (
+              {sources.map((s) => (
                 <div
                   key={s.id}
-                  className="p-4 rounded-xl border border-[#1e2333] bg-[#0e111a] space-y-3 relative"
+                  className="p-4 rounded-xl border-2 border-slate-900 bg-slate-50/70 space-y-3 relative shadow-[3px_3px_0px_#0f172a]"
                 >
                   {/* Source Header */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#181c28] pb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-slate-200 pb-2">
                     <div className="flex items-center gap-2 flex-1">
-                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-violet-950/80 border border-violet-500/30 text-violet-300">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-900 text-white border border-slate-900 shadow-[1px_1px_0px_#fde047]">
                         {s.id}
                       </span>
                       <Input
                         value={s.title}
                         onChange={(e) => handleUpdateSourceTitle(s.id, e.target.value)}
                         placeholder="Source Title / Publisher Name"
-                        className="h-7 text-xs bg-[#121520] border-[#222838] max-w-sm"
+                        className="h-8 text-xs font-bold bg-white border-2 border-slate-900 max-w-sm shadow-[1px_1px_0px_#0f172a]"
                       />
-                      <Badge variant="outline" className="text-[10px] uppercase font-mono">
+                      <Badge variant="outline" className="text-[10px] uppercase font-mono font-bold bg-white text-slate-900 border-2 border-slate-900">
                         {s.type === "url" ? "Web URL" : "Manual Text"}
                       </Badge>
                     </div>
@@ -797,28 +804,28 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                     {/* Extraction Status Badge */}
                     <div className="flex items-center gap-2">
                       {s.extractionStatus === "pending" && (
-                        <Badge variant="secondary" className="text-[10px] font-mono">
+                        <Badge variant="secondary" className="text-[10px] font-mono font-bold">
                           Pending
                         </Badge>
                       )}
                       {s.extractionStatus === "extracting" && (
-                        <Badge variant="cyan" className="text-[10px] font-mono animate-pulse gap-1">
+                        <Badge variant="cyan" className="text-[10px] font-mono font-bold animate-pulse gap-1">
                           <Loader2 className="w-2.5 h-2.5 animate-spin" />
                           Extracting
                         </Badge>
                       )}
                       {s.extractionStatus === "success" && (
-                        <Badge variant="verified" className="text-[10px] font-mono">
+                        <Badge variant="lime" className="text-[10px] font-mono font-bold">
                           ✓ {s.wordCount} words
                         </Badge>
                       )}
                       {s.extractionStatus === "failed" && (
-                        <Badge variant="outdated" className="text-[10px] font-mono">
+                        <Badge variant="pink" className="text-[10px] font-mono font-bold">
                           Extraction Failed
                         </Badge>
                       )}
                       {s.extractionStatus === "blocked" && (
-                        <Badge variant="high" className="text-[10px] font-mono">
+                        <Badge variant="pink" className="text-[10px] font-mono font-bold">
                           SSRF Blocked
                         </Badge>
                       )}
@@ -829,35 +836,35 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                         size="sm"
                         onClick={() => handleRemoveSource(s.id)}
                         disabled={sources.length === 1}
-                        className="h-7 w-7 p-0 text-slate-500 hover:text-rose-400"
+                        className="h-7 w-7 p-0 text-slate-500 hover:text-rose-600 hover:bg-rose-100 rounded-md"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
 
                   {/* URL Reference or Error notice */}
                   {s.url && (
-                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
-                      <span className="truncate max-w-md text-blue-400">{s.url}</span>
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-700">
+                      <span className="truncate max-w-md text-blue-700 font-semibold">{s.url}</span>
                       <button
                         type="button"
                         onClick={() => extractSingleUrl(s.id, s.url!)}
-                        className="text-violet-400 hover:underline flex items-center gap-1 shrink-0"
+                        className="text-purple-700 hover:underline flex items-center gap-1 shrink-0 font-bold"
                       >
-                        <RotateCcw className="w-2.5 h-2.5" />
+                        <RotateCcw className="w-3 h-3" />
                         Re-fetch
                       </button>
                     </div>
                   )}
 
                   {s.extractionError && (
-                    <div className="p-2.5 rounded-lg bg-rose-950/20 border border-rose-500/30 text-rose-300 text-xs space-y-1">
-                      <div className="font-semibold flex items-center gap-1">
-                        <AlertTriangle className="w-3.5 h-3.5" />
+                    <div className="p-2.5 rounded-lg bg-rose-50 border-2 border-rose-400 text-rose-900 text-xs space-y-1 shadow-[2px_2px_0px_#f43f5e]">
+                      <div className="font-bold flex items-center gap-1">
+                        <AlertTriangle className="w-4 h-4 text-rose-600" />
                         Extraction Warning: {s.extractionError}
                       </div>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="text-[11px] text-slate-700 font-medium">
                         Webpage was unavailable or blocked. You can supply manual text below as a fallback.
                       </p>
                     </div>
@@ -865,7 +872,7 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
 
                   {/* Source Content Textarea */}
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                    <div className="flex items-center justify-between text-[10px] font-mono font-bold text-slate-600">
                       <span>Document Text Excerpt:</span>
                       <span>{s.wordCount} words</span>
                     </div>
@@ -878,7 +885,7 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                           : "Paste document excerpt, handbook criteria, or policy statements here..."
                       }
                       rows={3}
-                      className="bg-[#121520] border-[#222838] text-xs font-mono text-slate-300"
+                      className="bg-white border-2 border-slate-900 text-xs font-mono text-slate-900 shadow-[2px_2px_0px_#0f172a]"
                     />
                   </div>
                 </div>
@@ -887,13 +894,13 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
           </div>
 
           {/* Submission Bar */}
-          <div className="p-5 rounded-xl border border-[#1b1f2e] bg-[#0c0e15] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-5 sm:p-6 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a] flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="space-y-1 text-left w-full sm:w-auto">
-              <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
-                <Database className="w-3.5 h-3.5 text-violet-400" />
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-950 font-bold">
+                <Database className="w-4 h-4 text-[#ec4899]" />
                 <span>Persistence: Auto-saved to repository upon execution</span>
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-600 font-medium">
                 Cross-examines claims, detects temporal drift, and outputs prioritized roadmap.
               </p>
             </div>
@@ -902,11 +909,11 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
               type="submit"
               onClick={handleAnalyze}
               disabled={isSubmitting}
-              className="w-full sm:w-auto h-11 px-8 bg-violet-600 hover:bg-violet-500 text-white font-semibold text-xs rounded-lg shadow-sm shrink-0"
+              className="w-full sm:w-auto h-12 px-8 bg-[#fde047] hover:bg-[#facc15] text-slate-950 font-display font-black text-sm rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all shrink-0"
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2 font-mono">
-                  <Radar className="w-4 h-4 animate-spin text-white" />
+                  <Radar className="w-4 h-4 animate-spin text-slate-950" />
                   <span>{currentStep || "Processing..."}</span>
                 </span>
               ) : (

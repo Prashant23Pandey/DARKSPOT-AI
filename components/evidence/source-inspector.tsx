@@ -21,42 +21,42 @@ export function SourceInspector({ sources }: SourceInspectorProps) {
   const active = sources[selectedIdx] || sources[0];
 
   return (
-    <Card className="border-slate-800 bg-slate-950/70 backdrop-blur-md">
-      <CardHeader className="pb-3">
+    <Card className="border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a]">
+      <CardHeader className="pb-3 border-b-2 border-slate-100">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <FileText className="w-4 h-4 text-cyan-400" />
-              <CardTitle className="text-lg font-bold">
+              <FileText className="w-5 h-5 text-[#ec4899]" />
+              <CardTitle className="text-xl font-display font-black text-slate-950">
                 Source Document Inspector & Content Stream
               </CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="text-slate-600 font-medium">
               Raw extracted evidence with word count metrics and temporal status verification.
             </CardDescription>
           </div>
-          <Badge variant="outline" className="font-mono text-xs">
+          <Badge variant="yellow" className="font-mono text-xs font-bold">
             {sources.length} Ingested Sources
           </Badge>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-4">
         {/* Source Selector Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-800/80">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b-2 border-slate-100">
           {sources.map((s, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => setSelectedIdx(idx)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors shrink-0 ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all shrink-0 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] ${
                 selectedIdx === idx
-                  ? "bg-cyan-500/10 text-cyan-300 border border-cyan-500/30"
-                  : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-slate-200"
+                  ? "bg-[#fde047] text-slate-950 shadow-[1px_1px_0px_#0f172a] translate-x-[1px] translate-y-[1px]"
+                  : "bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
               <span>{s.id}</span>
-              <span className="text-[10px] text-slate-500 truncate max-w-[120px]">
+              <span className="text-[10px] text-slate-600 truncate max-w-[120px]">
                 {s.title}
               </span>
             </button>
@@ -66,9 +66,9 @@ export function SourceInspector({ sources }: SourceInspectorProps) {
         {/* Selected Source Details */}
         {active && (
           <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-slate-900/60 border border-slate-800 text-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3.5 rounded-xl bg-slate-50 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] text-xs">
               <div className="space-y-0.5">
-                <div className="font-semibold text-slate-200">
+                <div className="font-display font-bold text-slate-950 text-sm">
                   {active.title}
                 </div>
                 {active.url && (
@@ -76,30 +76,30 @@ export function SourceInspector({ sources }: SourceInspectorProps) {
                     href={active.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[11px] text-cyan-400 hover:underline flex items-center gap-1"
+                    className="text-[11px] text-blue-700 font-mono font-bold hover:underline flex items-center gap-1"
                   >
                     {active.url}
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 )}
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="font-mono text-slate-400">
+                <span className="font-mono font-bold text-slate-700 px-2 py-0.5 rounded bg-white border border-slate-900">
                   {active.wordCount} words
                 </span>
                 {active.temporalStatus === "outdated" ? (
-                  <Badge variant="outdated">Outdated Cycle</Badge>
+                  <Badge variant="pink" className="font-bold">Outdated Cycle</Badge>
                 ) : active.temporalStatus === "current" ? (
-                  <Badge variant="verified">Current Cycle</Badge>
+                  <Badge variant="lime" className="font-bold">Current Cycle</Badge>
                 ) : (
-                  <Badge variant="secondary">Undated</Badge>
+                  <Badge variant="secondary" className="font-bold">Undated</Badge>
                 )}
               </div>
             </div>
 
             {/* Content Pre / Viewer */}
-            <div className="max-h-64 overflow-y-auto p-4 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
+            <div className="max-h-64 overflow-y-auto p-4 rounded-xl bg-slate-50 border-2 border-slate-900 font-mono text-xs text-slate-900 whitespace-pre-wrap leading-relaxed shadow-[2px_2px_0px_#0f172a]">
               {active.content}
             </div>
           </div>
