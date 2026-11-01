@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Settings, 
   Key, 
@@ -14,13 +14,18 @@ import {
   Trash2,
   Cpu,
   User,
-  Info
+  Info,
+  CheckCircle2,
+  AlertTriangle,
+  Server
 } from "lucide-react";
 import { WorkspaceLayout } from "@/components/layout/workspace-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DEFAULT_INVESTIGATIONS } from "@/lib/store/investigations";
+import { saveInvestigatorProfile, getInvestigatorProfile } from "@/lib/repository";
+import type { SupabaseHealthResponse } from "@/app/api/health/supabase/route";
 
 export default function SettingsPage() {
   const [name, setName] = useState("Lead Investigator");
@@ -28,11 +33,44 @@ export default function SettingsPage() {
   const [organization, setOrganization] = useState("Shinchan Hackathon Team");
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  const [geminiKeyInput, setGeminiKeyInput] = useState("");
-  const [savedKey, setSavedKey] = useState(false);
+  // Supabase Health State
+  const [supabaseHealth, setSupabaseHealth] = useState<SupabaseHealthResponse | null>(null);
+  const [isCheckingHealth, setIsCheckingHealth] = useState(false);
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  useEffect(() => {
+    async function loadInitialData() {
+      const profile = await getInvestigatorProfile();
+      setName(profile.name);
+      setRole(profile.role);
+      setOrganization(profile.organization);
+
+      checkSupabaseConnection();
+    }
+    loadInitialData();
+  }, []);
+
+  const checkSupabaseConnection = async () => {
+    setIsCheckingHealth(true);
+    try {
+      const res = await fetch("/api/health/supabase");
+      const data: SupabaseHealthResponse = await res.json();
+      setSupabaseHealth(data);
+    } catch {
+      setSupabaseHealth({
+        connected: false,
+        status: "Supabase connection unavailable",
+        isConfigured: false,
+        reason: "Failed to connect to healthcheck endpoint.",
+        timestamp: new Date().toISOString(),
+      });
+    } finally {
+      setIsCheckingHealth(false);
+    }
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    await saveInvestigatorProfile({ name, role, organization });
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2000);
   };
@@ -64,7 +102,7 @@ export default function SettingsPage() {
             Platform & Environment Settings
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 font-medium">
-            Manage investigator profile, live LLM connectors, persistence drivers, and local cache.
+            Manage investigator profile, live LLM connectors, Supabase PostgreSQL persistence, and local cache.
           </p>
         </div>
 
@@ -115,7 +153,7 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between pt-2">
               <span className="text-xs text-slate-500 font-mono font-medium">
-                Changes apply across exported briefings.
+                Saves to Supabase `investigator_profiles` and local cache.
               </span>
               <Button
                 type="submit"
@@ -125,7 +163,7 @@ export default function SettingsPage() {
                 {savedSuccess ? (
                   <>
                     <Check className="w-4 h-4 mr-1 text-slate-950 font-black" />
-                    Saved
+                    Profile Updated
                   </>
                 ) : (
                   "Update Profile"
@@ -135,55 +173,80 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        {/* 2. API Configuration Status */}
+        {/* 2. API & Supabase Configuration Status */}
         <div className="p-5 sm:p-6 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a] space-y-4">
-          <div className="flex items-center gap-2 border-b-2 border-slate-100 pb-3">
-            <div className="p-1 rounded bg-[#cffafe] border border-slate-900 shadow-[1px_1px_0px_#0f172a]">
-              <Key className="w-4 h-4 text-slate-950" />
+          <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1 rounded bg-[#cffafe] border border-slate-900 shadow-[1px_1px_0px_#0f172a]">
+                <Key className="w-4 h-4 text-slate-950" />
+              </div>
+              <h2 className="font-display font-black text-base text-slate-950">Database & Engine Health</h2>
             </div>
-            <h2 className="font-display font-black text-base text-slate-950">API Connectors & Live Engine Status</h2>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={checkSupabaseConnection}
+              disabled={isCheckingHealth}
+              className="text-xs h-8 font-bold border-2 border-slate-900 shadow-[1.5px_1.5px_0px_#0f172a] hover:bg-slate-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 mr-1 ${isCheckingHealth ? "animate-spin" : ""}`} />
+              Test Connection
+            </Button>
           </div>
 
           <div className="space-y-3">
-            {/* Gemini API */}
-            <div className="p-4 rounded-xl bg-slate-50 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Supabase PostgreSQL Layer — Genuine Healthcheck */}
+            <div className={`p-4 rounded-xl border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+              supabaseHealth?.connected ? "bg-[#dcfce7]/60" : "bg-amber-50/70"
+            }`}>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-purple-700" />
-                  <span className="font-display font-bold text-sm text-slate-950">Google Gemini 1.5 Flash</span>
-                  <Badge variant="cyan" className="text-[10px] font-bold">LLM CORE</Badge>
+                  <Database className={`w-4 h-4 ${supabaseHealth?.connected ? "text-emerald-700" : "text-amber-700"}`} />
+                  <span className="font-display font-bold text-sm text-slate-950">Supabase PostgreSQL Primary Database</span>
+                  <Badge variant={supabaseHealth?.connected ? "lime" : "yellow"} className="text-[10px] font-bold">
+                    {supabaseHealth?.connected ? "CONNECTED" : "FALLBACK ACTIVE"}
+                  </Badge>
                 </div>
-                <p className="text-xs text-slate-600 font-medium">
-                  Enforces strict structured JSON schema for gap and contradiction inference. If unset, automatically runs in Blueprint Mock Mode.
+                <p className="text-xs text-slate-700 font-medium">
+                  {supabaseHealth?.connected ? (
+                    <>Live connection verified ({supabaseHealth.latencyMs}ms). Tables verified: <span className="font-mono font-bold">{supabaseHealth.tablesVerified?.join(", ")}</span>.</>
+                  ) : (
+                    supabaseHealth?.reason || "Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your local environment file."
+                  )}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="text-slate-500 font-bold text-[10px]">Status:</span>
-                <span className="px-2.5 py-1 rounded-md bg-[#dcfce7] border border-slate-900 text-emerald-900 font-bold flex items-center gap-1 shadow-[1px_1px_0px_#0f172a]">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Configured (.env.local)
+              <div className="flex items-center gap-2 font-mono text-xs shrink-0">
+                <span className={`px-2.5 py-1 rounded-md border border-slate-900 font-bold flex items-center gap-1.5 shadow-[1px_1px_0px_#0f172a] ${
+                  supabaseHealth?.connected
+                    ? "bg-[#dcfce7] text-emerald-950"
+                    : "bg-[#fef9c3] text-amber-950"
+                }`}>
+                  <span className={`h-2 w-2 rounded-full ${
+                    supabaseHealth?.connected ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                  }`} />
+                  {supabaseHealth?.status || "Checking..."}
                 </span>
               </div>
             </div>
 
-            {/* Supabase */}
+            {/* Gemini API Core */}
             <div className="p-4 rounded-xl bg-slate-50 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <Database className="w-4 h-4 text-emerald-700" />
-                  <span className="font-display font-bold text-sm text-slate-950">Supabase PostgreSQL Layer</span>
-                  <Badge variant="lime" className="text-[10px] font-bold">PERSISTENCE</Badge>
+                  <Cpu className="w-4 h-4 text-purple-700" />
+                  <span className="font-display font-bold text-sm text-slate-950">AI Analysis Adapter</span>
+                  <Badge variant="cyan" className="text-[10px] font-bold">INDEPENDENT CORE</Badge>
                 </div>
                 <p className="text-xs text-slate-600 font-medium">
-                  Pre-configured schema tables (`investigations`, `sources`, `gap_reports`) ready for team sharing and auth.
+                  Runs deterministically offline. When `GEMINI_API_KEY` is configured in .env.local, structured LLM reasoning supplements the deterministic engines.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="text-slate-500 font-bold text-[10px]">Driver:</span>
+              <div className="flex items-center gap-2 font-mono text-xs shrink-0">
                 <span className="px-2.5 py-1 rounded-md bg-[#ede9fe] border border-slate-900 text-purple-900 font-bold shadow-[1px_1px_0px_#0f172a]">
-                  @supabase/ssr Ready
+                  Deterministic + LLM Ready
                 </span>
               </div>
             </div>
@@ -202,11 +265,11 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             <div className="p-4 rounded-xl border-2 border-slate-900 bg-[#fde047] shadow-[3px_3px_0px_#0f172a] space-y-1.5">
               <div className="font-display font-black text-slate-950 flex items-center justify-between">
-                <span>Neo Light Illustrative</span>
+                <span>Shinchan Hackathon 2026</span>
                 <Check className="w-4 h-4 text-slate-950 font-black" />
               </div>
               <p className="text-[11px] text-slate-900 font-medium leading-relaxed">
-                Off-white dot paper canvas with crisp borders, calligraphic fonts, and bold illustrative accents.
+                Neo-Light Illustrative Canvas featuring official DEVENGERS Shinchan investigation squad visual tokens.
               </p>
             </div>
 

@@ -37,6 +37,7 @@ export interface ManagedSourceItem {
   title: string;
   type: "url" | "manual_text";
   url?: string;
+  publishedAt?: string;
   content: string;
   extractionStatus: "pending" | "extracting" | "success" | "failed" | "blocked";
   extractionError?: string;
@@ -239,6 +240,29 @@ Disbursement is processed through the university comptroller upon registrar veri
 
   const handleUpdateSourceTitle = (id: string, title: string) => {
     setSources((prev) => prev.map((s) => (s.id === id ? { ...s, title } : s)));
+  };
+
+  const handleUpdateSourcePublishedAt = (id: string, publishedAt: string) => {
+    setSources((prev) => prev.map((s) => (s.id === id ? { ...s, publishedAt } : s)));
+  };
+
+  const getSourceDuplicateWarning = (source: ManagedSourceItem): string | null => {
+    if (source.type === "url" && source.url) {
+      const duplicates = sources.filter(
+        (s) => s.id !== source.id && s.url?.trim().toLowerCase() === source.url?.trim().toLowerCase()
+      );
+      const first = duplicates[0];
+      if (first) return `Duplicate URL detected (also in ${first.id})`;
+    }
+    if (source.content && source.content.trim().length > 40) {
+      const snippet = source.content.trim().toLowerCase();
+      const duplicates = sources.filter(
+        (s) => s.id !== source.id && s.content.trim().toLowerCase() === snippet
+      );
+      const first = duplicates[0];
+      if (first) return `Duplicate content detected (identical to ${first.id})`;
+    }
+    return null;
   };
 
   const handleAddManualTextSource = () => {
@@ -465,6 +489,7 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
         id: `Source ${idx + 1}`,
         title: s.title,
         url: s.url,
+        publishedAt: s.publishedAt || undefined,
         accessedAt: new Date().toISOString(),
         temporalStatus: s.temporalStatus,
         content: s.content,
@@ -502,26 +527,25 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
   return (
     <WorkspaceLayout>
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header Breadcrumb & Benchmark Quick Presets */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-slate-900 pb-5">
+        {/* Shinchan Research Workbench Welcome Banner */}
+        <div className="rounded-2xl border-2 border-slate-900 bg-white p-5 sm:p-6 shadow-[4px_4px_0px_#0f172a] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fde047] border-2 border-slate-900 text-slate-950 text-xs font-mono font-bold shadow-[2px_2px_0px_#0f172a] mb-1">
-              <span className="h-2 w-2 rounded-full bg-[#ec4899] animate-pulse" />
-              INVESTIGATION WORKBENCH
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#ffd84d] border border-slate-900 text-slate-950 text-[10px] font-mono font-bold shadow-[1px_1px_0px_#0f172a]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#e85a9b] animate-pulse" />
+              Shinchan Hackathon 2026 &bull; DEVENGERS
             </div>
-            <h1 className="text-2xl sm:text-3xl font-display font-black text-slate-950 tracking-tight flex items-center gap-2">
-              <Radar className="w-6 h-6 text-[#ec4899]" />
-              New Research & Source Ingestion
+            <h1 className="text-xl sm:text-2xl font-display font-black text-slate-950 tracking-tight">
+              Let&apos;s Investigate Something Interesting!
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium">
-              Collect, crawl, and cross-examine multi-source web pages, policies, and research text.
+            <p className="text-xs sm:text-sm text-slate-700 font-sans font-medium">
+              Enter your research question, collect your sources and let DARKSPOT AI uncover what might be missing.
             </p>
           </div>
 
           {/* Benchmark Preset Selectors */}
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap self-start sm:self-center shrink-0">
             <span className="text-[11px] font-mono font-bold text-slate-700 flex items-center gap-1">
-              <BookOpen className="w-3.5 h-3.5 text-[#ec4899]" />
+              <BookOpen className="w-3.5 h-3.5 text-[#e85a9b]" />
               Presets:
             </span>
             <Button
@@ -529,7 +553,7 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
               variant="outline"
               size="sm"
               onClick={() => loadPreset("scholarship")}
-              className="text-xs h-8 px-3 font-display font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-[#fde047]"
+              className="text-xs h-8 px-3 font-display font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-[#ffd84d]"
             >
               Scholarship
             </Button>
@@ -538,9 +562,9 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
               variant="outline"
               size="sm"
               onClick={() => loadPreset("ai_safety")}
-              className="text-xs h-8 px-3 font-display font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-[#cffafe]"
+              className="text-xs h-8 px-3 font-display font-bold bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-[#ffd84d]"
             >
-              AI Safety
+              AI Governance
             </Button>
             <Button
               type="button"
@@ -786,7 +810,7 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                 >
                   {/* Source Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-slate-200 pb-2">
-                    <div className="flex items-center gap-2 flex-1">
+                    <div className="flex items-center gap-2 flex-1 flex-wrap">
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-900 text-white border border-slate-900 shadow-[1px_1px_0px_#fde047]">
                         {s.id}
                       </span>
@@ -794,7 +818,15 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                         value={s.title}
                         onChange={(e) => handleUpdateSourceTitle(s.id, e.target.value)}
                         placeholder="Source Title / Publisher Name"
-                        className="h-8 text-xs font-bold bg-white border-2 border-slate-900 max-w-sm shadow-[1px_1px_0px_#0f172a]"
+                        className="h-8 text-xs font-bold bg-white border-2 border-slate-900 max-w-xs shadow-[1px_1px_0px_#0f172a]"
+                      />
+                      <Input
+                        type="text"
+                        value={s.publishedAt || ""}
+                        onChange={(e) => handleUpdateSourcePublishedAt(s.id, e.target.value)}
+                        placeholder="Pub Date (YYYY-MM-DD)"
+                        className="h-8 text-xs font-mono bg-white border-2 border-slate-900 w-36 shadow-[1px_1px_0px_#0f172a]"
+                        title="Optional publication date for temporal freshness analysis"
                       />
                       <Badge variant="outline" className="text-[10px] uppercase font-mono font-bold bg-white text-slate-900 border-2 border-slate-900">
                         {s.type === "url" ? "Web URL" : "Manual Text"}
@@ -842,6 +874,14 @@ Target platelet threshold is 75,000/uL. Anti-Xa levels checked daily.`,
                       </Button>
                     </div>
                   </div>
+
+                  {/* Duplicate Source Warning */}
+                  {getSourceDuplicateWarning(s) && (
+                    <div className="p-2.5 rounded-lg bg-amber-50 border-2 border-amber-400 text-amber-950 text-xs font-bold flex items-center gap-2 shadow-[2px_2px_0px_#f59e0b]">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>{getSourceDuplicateWarning(s)}</span>
+                    </div>
+                  )}
 
                   {/* URL Reference or Error notice */}
                   {s.url && (

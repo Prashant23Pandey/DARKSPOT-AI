@@ -4,6 +4,7 @@ import * as React from "react";
 import { CheckCircle2, ShieldCheck, ExternalLink, Hash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { SummaryFact } from "@/types";
+import { CharacterAvatar } from "@/components/shinchan/character-avatar";
 
 interface FactsSummaryProps {
   facts: SummaryFact[];
@@ -20,6 +21,24 @@ export function FactsSummary({ facts }: FactsSummaryProps) {
 
   return (
     <div className="rounded-2xl border-2 border-slate-900 bg-white p-6 shadow-[3px_3px_0px_#0f172a] space-y-4">
+      {/* Kazama Research Intelligence Guidance */}
+      <div className="rounded-xl border-2 border-slate-900 bg-[#e0f2fe] p-3 flex items-center gap-3 shadow-[2px_2px_0px_#0f172a]">
+        <CharacterAvatar character="kazama" size="sm" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-display font-black text-xs text-slate-950">
+              Kazama &bull; Research Intelligence &amp; Methodology
+            </span>
+            <span className="text-[9px] font-mono font-bold bg-[#0369a1] text-white px-2 py-0.5 rounded-full">
+              GROUNDED EVIDENCE
+            </span>
+          </div>
+          <p className="text-xs text-slate-800 font-sans font-medium mt-0.5 leading-snug">
+            &ldquo;Every fact in this baseline has been cross-grounded in source text. We never fabricate citations.&rdquo;
+          </p>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between pb-3 border-b-2 border-slate-900">
         <div>
           <div className="flex items-center gap-2 mb-1">

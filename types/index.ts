@@ -212,6 +212,7 @@ export interface ChecklistItem {
   reason_for_verification?: string;
   related_gap_or_conflict?: string;
   recommended_source?: string;
+  status?: "pending" | "in_progress" | "verified" | "unable_to_verify";
   completed?: boolean;
   assignedSources?: string[];
   supporting_evidence_references?: string[];

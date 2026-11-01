@@ -1,30 +1,58 @@
 "use client";
 
 import * as React from "react";
-import { Database, HardDrive, ShieldCheck, Sparkles } from "lucide-react";
+import { Database, HardDrive, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { getRepositoryStatus, type RepositoryStatus } from "@/lib/repository";
+import type { SupabaseHealthResponse } from "@/app/api/health/supabase/route";
 
 export function PersistenceStatusBanner() {
-  const [status, setStatus] = React.useState<RepositoryStatus | null>(null);
+  const [health, setHealth] = React.useState<SupabaseHealthResponse | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    setStatus(getRepositoryStatus());
+    let isMounted = true;
+    async function checkHealth() {
+      try {
+        const res = await fetch("/api/health/supabase");
+        const data: SupabaseHealthResponse = await res.json();
+        if (isMounted) {
+          setHealth(data);
+          setLoading(false);
+        }
+      } catch {
+        if (isMounted) {
+          setHealth({
+            connected: false,
+            status: "Supabase connection unavailable",
+            isConfigured: false,
+            reason: "Could not reach internal health check endpoint.",
+            timestamp: new Date().toISOString(),
+          });
+          setLoading(false);
+        }
+      }
+    }
+    checkHealth();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  if (!status) return null;
+  if (loading || !health) return null;
+
+  const isConnected = health.connected;
 
   return (
     <div
       className={`p-4 rounded-2xl border-2 border-slate-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[3px_3px_0px_#0f172a] ${
-        status.mode === "supabase"
+        isConnected
           ? "bg-[#dcfce7] text-[#14532d]"
           : "bg-[#fef08a] text-[#713f12]"
       }`}
     >
       <div className="flex items-center gap-3">
         <div className="h-9 w-9 rounded-xl bg-white border-2 border-slate-900 flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#0f172a]">
-          {status.mode === "supabase" ? (
+          {isConnected ? (
             <Database className="w-5 h-5 text-emerald-700" />
           ) : (
             <HardDrive className="w-5 h-5 text-amber-800" />
@@ -33,17 +61,19 @@ export function PersistenceStatusBanner() {
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-extrabold text-slate-950 font-display text-sm">
-              {status.mode === "supabase" ? "Supabase Cloud Database Connected" : "Local Demonstration Mode Active"}
+              {isConnected ? "Connected to Supabase" : "Supabase connection unavailable"}
             </span>
             <Badge
-              variant={status.mode === "supabase" ? "verified" : "yellow"}
-              className="text-[10px] py-0.5 font-mono"
+              variant={isConnected ? "verified" : "yellow"}
+              className="text-[10px] py-0.5 font-mono font-bold"
             >
-              {status.mode === "supabase" ? "PostgreSQL Synced" : "Browser Persistence"}
+              {isConnected ? `PostgreSQL Live (${health.latencyMs}ms)` : "Local Storage Fallback"}
             </Badge>
           </div>
           <p className="text-xs text-slate-800 font-medium mt-0.5 leading-relaxed font-sans">
-            {status.message}
+            {isConnected
+              ? `Synchronizing investigations across ${health.tablesVerified?.join(", ") || "tables"}.`
+              : health.reason || "Local Demonstration Mode Active: Running with zero-latency browser storage."}
           </p>
         </div>
       </div>

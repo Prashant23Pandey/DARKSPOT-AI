@@ -19,26 +19,38 @@ import {
   CheckCircle2,
   Filter,
   Layers,
-  Radio
+  Radio,
+  FileSearch,
+  CheckSquare,
+  AlertTriangle,
+  Flame
 } from "lucide-react";
 import { WorkspaceLayout } from "@/components/layout/workspace-layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { getStoredInvestigations, type InvestigationRecord } from "@/lib/store/investigations";
+import { getAllInvestigations, type InvestigationRecord } from "@/lib/repository";
 import { PersistenceStatusBanner } from "@/components/dashboard/persistence-status-banner";
 import { formatDate } from "@/lib/utils";
+import { CharacterAvatar } from "@/components/shinchan/character-avatar";
 
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const queryParam = searchParams.get("q") || "";
 
   const [investigations, setInvestigations] = React.useState<InvestigationRecord[]>([]);
-  const [filter, setFilter] = React.useState<"all" | "high_risk" | "starred">("all");
+  const [filter, setFilter] = React.useState<"all" | "high_risk" | "conflicts" | "gaps" | "starred">("all");
   const [search, setSearch] = React.useState(queryParam);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    setInvestigations(getStoredInvestigations());
+    async function loadData() {
+      setIsLoading(true);
+      const list = await getAllInvestigations();
+      setInvestigations(list);
+      setIsLoading(false);
+    }
+    loadData();
   }, []);
 
   React.useEffect(() => {
@@ -47,13 +59,57 @@ export default function DashboardPage() {
     }
   }, [queryParam]);
 
-  // Aggregate Metrics
+  // Aggregate Metrics from real investigations
   const totalDossiers = investigations.length;
+  const totalSources = investigations.reduce((sum, inv) => sum + (inv.sources?.length || 0), 0);
   const totalGaps = investigations.reduce((sum, inv) => sum + (inv.result?.metrics?.gapCount || 0), 0);
   const totalConflicts = investigations.reduce((sum, inv) => sum + (inv.result?.metrics?.conflictCount || 0), 0);
+  const totalOutdated = investigations.reduce((sum, inv) => sum + (inv.result?.metrics?.outdatedCount || 0), 0);
+  
+  // Verification Tasks Progress
+  const totalTasks = investigations.reduce((sum, inv) => sum + (inv.result?.verification_checklist?.length || 0), 0);
+  const completedTasks = investigations.reduce(
+    (sum, inv) => sum + (inv.result?.verification_checklist?.filter((t: { completed?: boolean; status?: string }) => t.completed || t.status === "verified").length || 0),
+    0
+  );
+  const verificationProgressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
   const avgDarkSpotIndex = totalDossiers > 0
     ? Math.round(investigations.reduce((sum, inv) => sum + (inv.result?.metrics?.darkSpotIndex || 0), 0) / totalDossiers)
     : 0;
+
+  // Aggregate Research Coverage Matrix across all active investigations
+  const coverageMatrix = React.useMemo(() => {
+    let coveredCount = 0;
+    let partialCount = 0;
+    let missingCount = 0;
+    let conflictCount = totalConflicts;
+    let needsVerificationCount = totalTasks - completedTasks;
+
+    for (const inv of investigations) {
+      if (inv.result?.dimensions && inv.result.dimensions.length > 0) {
+        for (const dim of inv.result.dimensions) {
+          if (dim.status === "found") coveredCount++;
+          else if (dim.status === "partially_found") partialCount++;
+          else if (dim.status === "not_found") missingCount++;
+        }
+      } else {
+        // Fallback approximation if dimensions not cached
+        const facts = inv.result?.structured_summary?.length || 0;
+        const gaps = inv.result?.information_gaps?.length || 0;
+        coveredCount += Math.max(1, facts);
+        missingCount += gaps;
+      }
+    }
+
+    return {
+      covered: coveredCount,
+      partiallyCovered: partialCount,
+      missing: missingCount,
+      conflicting: conflictCount,
+      needsVerification: Math.max(0, needsVerificationCount),
+    };
+  }, [investigations, totalConflicts, totalTasks, completedTasks]);
 
   // Filtered investigations
   const filtered = investigations.filter((inv) => {
@@ -62,35 +118,40 @@ export default function DashboardPage() {
     if (!matchesSearch) return false;
     if (filter === "starred") return inv.isStarred;
     if (filter === "high_risk") return (inv.result?.metrics?.darkSpotIndex || 0) >= 70;
+    if (filter === "conflicts") return (inv.result?.metrics?.conflictCount || 0) > 0;
+    if (filter === "gaps") return (inv.result?.metrics?.gapCount || 0) > 0;
     return true;
   });
 
   return (
     <WorkspaceLayout>
       <div className="space-y-6">
-        {/* Welcome Section — Neo-Brutalist Light Style */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-8 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a]">
-          <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#fde047] border-2 border-slate-900 text-slate-950 font-black text-[11px] font-mono shadow-[1px_1px_0px_#0f172a] uppercase tracking-wider">
-                Shinchan Hackathon 2026
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-[#fce7f3] border-2 border-slate-900 text-[#be185d] font-bold text-[11px] font-mono shadow-[1px_1px_0px_#0f172a]">
-                AI Gap Engine
-              </span>
+        {/* Welcome Section — Shinchan Hackathon Edition */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-6 sm:p-8 rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_#0f172a]">
+          <div className="flex items-start sm:items-center gap-4">
+            <CharacterAvatar character="shinchan" size="lg" className="hidden sm:inline-flex" />
+            <div className="space-y-2 max-w-2xl">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#ffd84d] border-2 border-slate-900 text-slate-950 font-black text-[11px] font-mono shadow-[1px_1px_0px_#0f172a] uppercase tracking-wider">
+                  DEVENGERS &bull; Shinchan Hackathon 2026
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-[#fce7f3] border-2 border-slate-900 text-[#be185d] font-bold text-[11px] font-mono shadow-[1px_1px_0px_#0f172a]">
+                  Evidence Intelligence Console
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-4xl font-black font-display text-slate-950 tracking-tight">
+                Investigative <span className="text-[#e85a9b]">Intelligence</span> Console
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-sans font-medium">
+                <strong className="text-slate-950 font-black">Ready to investigate what&apos;s missing?</strong> Cross-examine heterogeneous evidence sources to uncover potential information gaps, reconcile conflicting claims, and build deterministic verification roadmaps.
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black font-display text-slate-950 tracking-tight">
-              Investigative <span className="text-[#db2777]">Intelligence</span> Console
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans font-medium">
-              Cross-examine heterogeneous evidence sources to uncover potential information gaps, reconciles conflicting claims, and build deterministic verification roadmaps.
-            </p>
           </div>
 
           <Button
             asChild
             size="lg"
-            className="h-11 px-5 bg-[#fde047] hover:bg-[#facc15] text-slate-950 border-2 border-slate-900 rounded-xl shadow-[3px_3px_0px_#0f172a] hover:shadow-[4px_4px_0px_#0f172a] text-xs font-black shrink-0 active:translate-x-0.5 active:translate-y-0.5"
+            className="h-11 px-5 bg-[#ffd84d] hover:bg-[#facc15] text-slate-950 border-2 border-slate-900 rounded-xl shadow-[3px_3px_0px_#0f172a] hover:shadow-[4px_4px_0px_#0f172a] text-xs font-black shrink-0 active:translate-x-0.5 active:translate-y-0.5"
           >
             <Link href="/research/new" className="flex items-center gap-2">
               <Plus className="w-4 h-4 text-slate-950" />
@@ -99,63 +160,156 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Persistence Status Banner */}
+        {/* Persistence Status Banner with Real Supabase Verification */}
         <PersistenceStatusBanner />
 
-        {/* 4 Statistics Cards — Colorful Illustrative Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 6 Interactive Statistics Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5">
           {/* Card 1: Total Dossiers */}
-          <div className="p-5 rounded-2xl border-2 border-slate-900 bg-white shadow-[3px_3px_0px_#0f172a] space-y-2">
+          <button
+            onClick={() => setFilter("all")}
+            className={`p-4 rounded-2xl border-2 border-slate-900 bg-white text-left shadow-[3px_3px_0px_#0f172a] hover:-translate-y-0.5 transition-all space-y-1.5 ${
+              filter === "all" ? "ring-2 ring-slate-950 bg-slate-50" : ""
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-600 font-mono uppercase">Total Dossiers</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#ede9fe] border border-slate-900 text-[#6d28d9] font-black text-[10px] font-mono">
+              <span className="text-[10px] font-bold text-slate-600 font-mono uppercase">Total Dossiers</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-[#ede9fe] border border-slate-900 text-[#6d28d9] font-black text-[9px] font-mono">
                 DOSSIERS
               </span>
             </div>
-            <div className="text-4xl font-black text-slate-950 font-display">{totalDossiers}</div>
-            <p className="text-[11px] text-slate-500 font-medium">Active multi-source investigations</p>
+            <div className="text-3xl font-black text-slate-950 font-display">{totalDossiers}</div>
+            <p className="text-[10px] text-slate-500 font-medium">Active investigations</p>
+          </button>
+
+          {/* Card 2: Sources Analyzed */}
+          <div className="p-4 rounded-2xl border-2 border-slate-900 bg-white text-left shadow-[3px_3px_0px_#0f172a] space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-600 font-mono uppercase">Sources Analyzed</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-[#e0f2fe] border border-slate-900 text-[#0369a1] font-black text-[9px] font-mono">
+                EVIDENCE
+              </span>
+            </div>
+            <div className="text-3xl font-black text-[#0369a1] font-display">{totalSources}</div>
+            <p className="text-[10px] text-slate-500 font-medium">URLs & excerpts ingested</p>
           </div>
 
-          {/* Card 2: Critical Gaps */}
-          <div className="p-5 rounded-2xl border-2 border-slate-900 bg-white shadow-[3px_3px_0px_#0f172a] space-y-2">
+          {/* Card 3: Critical Gaps */}
+          <button
+            onClick={() => setFilter("gaps")}
+            className={`p-4 rounded-2xl border-2 border-slate-900 bg-white text-left shadow-[3px_3px_0px_#0f172a] hover:-translate-y-0.5 transition-all space-y-1.5 ${
+              filter === "gaps" ? "ring-2 ring-[#be123c] bg-[#fff1f2]" : ""
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-600 font-mono uppercase">Critical Gaps</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#ffe4e6] border border-slate-900 text-[#be123c] font-black text-[10px] font-mono">
+              <span className="text-[10px] font-bold text-slate-600 font-mono uppercase">Information Gaps</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-[#ffe4e6] border border-slate-900 text-[#be123c] font-black text-[9px] font-mono">
                 OMISSIONS
               </span>
             </div>
-            <div className="text-4xl font-black text-[#be123c] font-display">{totalGaps}</div>
-            <p className="text-[11px] text-slate-500 font-medium">Unanswered institutional criteria</p>
-          </div>
+            <div className="text-3xl font-black text-[#be123c] font-display">{totalGaps}</div>
+            <p className="text-[10px] text-slate-500 font-medium">Unanswered criteria</p>
+          </button>
 
-          {/* Card 3: Contradictions */}
-          <div className="p-5 rounded-2xl border-2 border-slate-900 bg-white shadow-[3px_3px_0px_#0f172a] space-y-2">
+          {/* Card 4: Contradictions */}
+          <button
+            onClick={() => setFilter("conflicts")}
+            className={`p-4 rounded-2xl border-2 border-slate-900 bg-white text-left shadow-[3px_3px_0px_#0f172a] hover:-translate-y-0.5 transition-all space-y-1.5 ${
+              filter === "conflicts" ? "ring-2 ring-[#b45309] bg-[#fffbeb]" : ""
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-600 font-mono uppercase">Contradictions</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#fef3c7] border border-slate-900 text-[#b45309] font-black text-[10px] font-mono">
+              <span className="text-[10px] font-bold text-slate-600 font-mono uppercase">Contradictions</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-[#fef3c7] border border-slate-900 text-[#b45309] font-black text-[9px] font-mono">
                 CONFLICTS
               </span>
             </div>
-            <div className="text-4xl font-black text-[#b45309] font-display">{totalConflicts}</div>
-            <p className="text-[11px] text-slate-500 font-medium">Cross-source variances & date clashes</p>
-          </div>
+            <div className="text-3xl font-black text-[#b45309] font-display">{totalConflicts}</div>
+            <p className="text-[10px] text-slate-500 font-medium">Cross-source variances</p>
+          </button>
 
-          {/* Card 4: Dark Spot Index */}
-          <div className="p-5 rounded-2xl border-2 border-slate-900 bg-white shadow-[3px_3px_0px_#0f172a] space-y-2">
+          {/* Card 5: Potentially Outdated */}
+          <div className="p-4 rounded-2xl border-2 border-slate-900 bg-white text-left shadow-[3px_3px_0px_#0f172a] space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-600 font-mono uppercase">Avg Dark Spot Index</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#cffafe] border border-slate-900 text-[#0e7490] font-black text-[10px] font-mono">
-                RISK SCORE
+              <span className="text-[10px] font-bold text-slate-600 font-mono uppercase">Temporal Drift</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-[#ffedd5] border border-slate-900 text-[#c2410c] font-black text-[9px] font-mono">
+                STALE
               </span>
             </div>
-            <div className="text-4xl font-black text-[#0e7490] font-display">{avgDarkSpotIndex}<span className="text-lg font-bold text-slate-400">/100</span></div>
-            <p className="text-[11px] text-slate-500 font-medium">Information gap vulnerability benchmark</p>
+            <div className="text-3xl font-black text-[#c2410c] font-display">{totalOutdated}</div>
+            <p className="text-[10px] text-slate-500 font-medium">Obsolete cycles detected</p>
+          </div>
+
+          {/* Card 6: Verification Progress */}
+          <div className="p-4 rounded-2xl border-2 border-slate-900 bg-white text-left shadow-[3px_3px_0px_#0f172a] space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-600 font-mono uppercase">Verification</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-[#dcfce7] border border-slate-900 text-[#15803d] font-black text-[9px] font-mono">
+                TASKS
+              </span>
+            </div>
+            <div className="text-3xl font-black text-[#15803d] font-display">{verificationProgressPercent}%</div>
+            <p className="text-[10px] text-slate-500 font-medium">{completedTasks}/{totalTasks} verified</p>
+          </div>
+        </div>
+
+        {/* Research Coverage Matrix */}
+        <div className="rounded-2xl border-2 border-slate-900 bg-white p-5 sm:p-6 shadow-[4px_4px_0px_#0f172a] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1 rounded bg-[#ffd84d] border border-slate-900 shadow-[1px_1px_0px_#0f172a]">
+                <Layers className="w-4 h-4 text-slate-950" />
+              </div>
+              <h2 className="text-base font-black font-display text-slate-950">
+                Research Coverage Matrix
+              </h2>
+            </div>
+            <span className="text-xs font-mono font-bold text-slate-500">
+              Cross-Dossier Completeness & Evidence Baseline
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+            {/* 1. Covered */}
+            <div className="p-3.5 rounded-xl border-2 border-slate-900 bg-[#dcfce7]/70 shadow-[2px_2px_0px_#0f172a] space-y-1">
+              <div className="text-[11px] font-mono font-black text-[#14532d] uppercase">Covered</div>
+              <div className="text-2xl font-black text-[#15803d] font-display">{coverageMatrix.covered}</div>
+              <p className="text-[10px] text-slate-600 font-medium">Consensus verified</p>
+            </div>
+
+            {/* 2. Partially Covered */}
+            <div className="p-3.5 rounded-xl border-2 border-slate-900 bg-[#cffafe]/70 shadow-[2px_2px_0px_#0f172a] space-y-1">
+              <div className="text-[11px] font-mono font-black text-[#0e7490] uppercase">Partially Covered</div>
+              <div className="text-2xl font-black text-[#0891b2] font-display">{coverageMatrix.partiallyCovered}</div>
+              <p className="text-[10px] text-slate-600 font-medium">Fragmented claims</p>
+            </div>
+
+            {/* 3. Missing */}
+            <div className="p-3.5 rounded-xl border-2 border-slate-900 bg-[#ffe4e6]/70 shadow-[2px_2px_0px_#0f172a] space-y-1">
+              <div className="text-[11px] font-mono font-black text-[#be123c] uppercase">Missing From Sources</div>
+              <div className="text-2xl font-black text-[#e11d48] font-display">{coverageMatrix.missing}</div>
+              <p className="text-[10px] text-slate-600 font-medium">Omitted criteria</p>
+            </div>
+
+            {/* 4. Conflicting */}
+            <div className="p-3.5 rounded-xl border-2 border-slate-900 bg-[#fef3c7]/70 shadow-[2px_2px_0px_#0f172a] space-y-1">
+              <div className="text-[11px] font-mono font-black text-[#b45309] uppercase">Conflicting</div>
+              <div className="text-2xl font-black text-[#d97706] font-display">{coverageMatrix.conflicting}</div>
+              <p className="text-[10px] text-slate-600 font-medium">Numerical & date clashes</p>
+            </div>
+
+            {/* 5. Needs Verification */}
+            <div className="p-3.5 rounded-xl border-2 border-slate-900 bg-[#ede9fe]/70 shadow-[2px_2px_0px_#0f172a] space-y-1 col-span-2 sm:col-span-1">
+              <div className="text-[11px] font-mono font-black text-[#6d28d9] uppercase">Needs Verification</div>
+              <div className="text-2xl font-black text-[#7c3aed] font-display">{coverageMatrix.needsVerification}</div>
+              <p className="text-[10px] text-slate-600 font-medium">Open checklist tasks</p>
+            </div>
           </div>
         </div>
 
         {/* Filter & Search Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] max-w-fit">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] flex-wrap max-w-fit">
             <button
               onClick={() => setFilter("all")}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
@@ -170,7 +324,23 @@ export default function DashboardPage() {
                 filter === "high_risk" ? "bg-[#ffe4e6] text-[#be123c] border border-slate-900 shadow-sm" : "text-slate-600 hover:text-[#be123c]"
               }`}
             >
-              High Risk Index
+              High Risk
+            </button>
+            <button
+              onClick={() => setFilter("conflicts")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                filter === "conflicts" ? "bg-[#fef3c7] text-[#b45309] border border-slate-900 shadow-sm" : "text-slate-600 hover:text-[#b45309]"
+              }`}
+            >
+              Conflicts
+            </button>
+            <button
+              onClick={() => setFilter("gaps")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                filter === "gaps" ? "bg-[#fee2e2] text-[#991b1b] border border-slate-900 shadow-sm" : "text-slate-600 hover:text-[#991b1b]"
+              }`}
+            >
+              Gaps
             </button>
             <button
               onClick={() => setFilter("starred")}
@@ -243,104 +413,55 @@ export default function DashboardPage() {
                       </p>
 
                       <div className="flex items-center gap-2 pt-1 flex-wrap">
-                        {inv.tags?.map((t, idx) => (
+                        {inv.tags?.map((t: string, idx: number) => (
                           <span
                             key={idx}
-                            className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-800 border border-slate-300"
+                            className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 border border-slate-300 text-slate-700"
                           >
                             #{t}
                           </span>
                         ))}
-                        <span className="text-[11px] font-mono font-bold text-slate-700 bg-[#e0f2fe] px-2 py-0.5 rounded-lg border border-slate-300">
-                          {inv.sources.length} Sources Analyzed
-                        </span>
                       </div>
                     </div>
 
-                    {/* Stats & Actions */}
-                    <div className="flex items-center gap-5 shrink-0 border-t md:border-t-0 pt-4 md:pt-0 border-slate-200">
-                      {/* Dark Spot Index badge */}
-                      <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase">Dark Spot Index</span>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xl font-black font-display ${
-                            darkSpotIndex >= 70 ? "text-[#be123c]" : darkSpotIndex >= 40 ? "text-[#b45309]" : "text-[#0e7490]"
-                          }`}>
-                            {darkSpotIndex}/100
-                          </span>
+                    {/* Right side metrics and actions */}
+                    <div className="flex items-center gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 justify-between md:justify-end">
+                      <div className="flex items-center gap-3">
+                        {/* Gaps count */}
+                        <div className="text-center px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200">
+                          <div className="text-[10px] font-mono font-bold text-rose-700">GAPS</div>
+                          <div className="text-sm font-black text-rose-900">{inv.result?.metrics?.gapCount || 0}</div>
+                        </div>
+
+                        {/* Conflicts count */}
+                        <div className="text-center px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200">
+                          <div className="text-[10px] font-mono font-bold text-amber-700">CONFLICTS</div>
+                          <div className="text-sm font-black text-amber-900">{inv.result?.metrics?.conflictCount || 0}</div>
+                        </div>
+
+                        {/* Dark Spot Index */}
+                        <div className="text-center px-3 py-1.5 rounded-xl bg-[#cffafe] border border-cyan-300">
+                          <div className="text-[10px] font-mono font-bold text-cyan-900">INDEX</div>
+                          <div className="text-sm font-black text-cyan-950">{darkSpotIndex}</div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5">
-                        <Button
-                          asChild
-                          size="sm"
-                          className="h-9 px-3.5 text-xs bg-white hover:bg-slate-50 text-slate-900 font-bold border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] active:translate-x-0.5 active:translate-y-0.5"
-                        >
-                          <Link href={`/evidence/${inv.id}`}>
-                            Evidence
-                          </Link>
-                        </Button>
-                        <Button
-                          asChild
-                          size="sm"
-                          className="h-9 px-4 text-xs bg-[#fde047] hover:bg-[#facc15] text-slate-950 font-black border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] active:translate-x-0.5 active:translate-y-0.5"
-                        >
-                          <Link href={`/research/${inv.id}`} className="flex items-center gap-1.5">
-                            <span>Inspect</span>
-                            <ArrowUpRight className="w-3.5 h-3.5 text-slate-950" />
-                          </Link>
-                        </Button>
-                      </div>
+                      <Button
+                        asChild
+                        size="sm"
+                        className="h-9 px-4 bg-white hover:bg-slate-100 text-slate-900 font-black border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] text-xs flex items-center gap-1 group-hover:bg-[#ffd84d]"
+                      >
+                        <Link href={`/research/${inv.id}`}>
+                          <span>Open</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </Button>
                     </div>
                   </div>
                 );
               })}
             </div>
           )}
-        </div>
-
-        {/* Recent Research Activity Stream (Ticker style like reference screenshot 3) */}
-        <div className="rounded-2xl border-2 border-slate-900 bg-white p-6 space-y-4 shadow-[3px_3px_0px_#0f172a]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="h-7 w-7 rounded-lg bg-[#fde047] border border-slate-900 flex items-center justify-center shadow-[1px_1px_0px_#0f172a]">
-                <Activity className="w-4 h-4 text-slate-950" />
-              </div>
-              <h3 className="font-black text-sm font-display text-slate-950">Recent Incident & Research Ticker</h3>
-              <span className="px-2 py-0.5 rounded-full bg-[#fde047] border border-slate-900 text-slate-950 font-black text-[9px] font-mono">
-                LIVE FEED
-              </span>
-            </div>
-            <span className="text-[11px] font-mono font-bold text-[#15803d] flex items-center gap-1.5 bg-[#f0fdf4] px-2.5 py-1 rounded-full border border-slate-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              Inference Active
-            </span>
-          </div>
-
-          <div className="space-y-2.5 text-xs font-sans">
-            <div className="flex items-start justify-between p-3 rounded-xl bg-[#f0fdf4] border border-emerald-300 text-slate-900">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span className="font-semibold">[EXTRACTION] Ingested 3 multi-page source streams for Higher Education Scholarship Renewal</span>
-              </div>
-              <span className="text-[11px] font-mono font-bold text-slate-500 shrink-0">10:44:20</span>
-            </div>
-            <div className="flex items-start justify-between p-3 rounded-xl bg-[#ffe4e6] border border-rose-300 text-slate-900">
-              <div className="flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" />
-                <span className="font-semibold">[OMISSION GAP] Flagged missing annual re-application deadline criteria in student handbook</span>
-              </div>
-              <span className="text-[11px] font-mono font-bold text-slate-500 shrink-0">10:43:05</span>
-            </div>
-            <div className="flex items-start justify-between p-3 rounded-xl bg-[#fef3c7] border border-amber-300 text-slate-900">
-              <div className="flex items-center gap-2">
-                <GitFork className="w-4 h-4 text-amber-600 shrink-0" />
-                <span className="font-semibold">[CONTRADICTION] Flagged numerical tax filing year variance between Portal (2024) and Financial Aid Guide (2025)</span>
-              </div>
-              <span className="text-[11px] font-mono font-bold text-slate-500 shrink-0">10:41:12</span>
-            </div>
-          </div>
         </div>
       </div>
     </WorkspaceLayout>

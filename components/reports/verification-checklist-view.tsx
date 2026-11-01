@@ -19,16 +19,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ChecklistItem, GapPriority } from "@/types";
+import { CharacterAvatar } from "@/components/shinchan/character-avatar";
 
 interface VerificationChecklistViewProps {
   checklist: ChecklistItem[];
   onToggleItem: (id: string) => void;
+  onUpdateStatus?: (id: string, status: "pending" | "in_progress" | "verified" | "unable_to_verify") => void;
   className?: string;
 }
 
 export function VerificationChecklistView({
   checklist = [],
   onToggleItem,
+  onUpdateStatus,
   className = "",
 }: VerificationChecklistViewProps) {
   const [filterPriority, setFilterPriority] = React.useState<string>("all");
@@ -109,22 +112,25 @@ export function VerificationChecklistView({
   return (
     <div className={`rounded-2xl border-2 border-slate-900 bg-white p-6 shadow-[3px_3px_0px_#0f172a] space-y-4 ${className}`}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-slate-900">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <div className="p-1 rounded-lg bg-[#cffafe] border border-slate-900">
-              <Compass className="w-4 h-4 text-[#0e7490]" />
+        <div className="flex items-center gap-3">
+          <CharacterAvatar character="nene" size="sm" />
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-[10px] font-mono font-bold bg-[#fce7f3] text-[#be185d] border border-[#be185d] px-2 py-0.2 rounded-full uppercase">
+                Verification Assistant
+              </span>
             </div>
-            <h3 className="text-lg font-black font-display text-slate-950">
-              Prioritized Verification Planner & Roadmap
+            <h3 className="text-lg sm:text-xl font-black font-display text-slate-950">
+              Nene&apos;s Verification Checklist
             </h3>
+            <p className="text-slate-600 text-xs font-medium font-sans">
+              Prioritized action items synthesized to verify and close identified blind spots.
+            </p>
           </div>
-          <p className="text-slate-600 text-xs font-medium font-sans">
-            Synthesized action items directly addressing detected dark spots, contradictions, and temporal drift.
-          </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-black text-slate-900 bg-[#fde047] px-3 py-1 rounded-full border-2 border-slate-900 shadow-[1px_1px_0px_#0f172a]">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <span className="text-xs font-mono font-black text-slate-900 bg-[#ffd84d] px-3 py-1 rounded-full border-2 border-slate-900 shadow-[1px_1px_0px_#0f172a]">
             {completedCount} of {totalCount} Tasks Verified ({progressPercent}%)
           </span>
         </div>
@@ -230,6 +236,45 @@ export function VerificationChecklistView({
                       }`}>
                         {item.action}
                       </p>
+
+                      {/* 4-State Verification Status Workflow */}
+                      <div className="flex items-center gap-1.5 flex-wrap pt-1.5">
+                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase">Status:</span>
+                        {(["pending", "in_progress", "verified", "unable_to_verify"] as const).map((st) => {
+                          const currentStatus = item.status || (item.completed ? "verified" : "pending");
+                          const isCurrent = currentStatus === st;
+                          const labelMap = {
+                            pending: "Pending",
+                            in_progress: "In Progress",
+                            verified: "Verified",
+                            unable_to_verify: "Unable to Verify",
+                          };
+                          const colorMap = {
+                            pending: isCurrent ? "bg-[#fef9c3] text-[#854d0e] border-slate-900 font-black" : "bg-slate-50 text-slate-600 hover:bg-slate-100",
+                            in_progress: isCurrent ? "bg-[#cffafe] text-[#0e7490] border-slate-900 font-black" : "bg-slate-50 text-slate-600 hover:bg-slate-100",
+                            verified: isCurrent ? "bg-[#dcfce7] text-[#15803d] border-slate-900 font-black" : "bg-slate-50 text-slate-600 hover:bg-slate-100",
+                            unable_to_verify: isCurrent ? "bg-[#ffe4e6] text-[#be123c] border-slate-900 font-black" : "bg-slate-50 text-slate-600 hover:bg-slate-100",
+                          };
+                          return (
+                            <button
+                              key={st}
+                              type="button"
+                              onClick={() => {
+                                if (onUpdateStatus) {
+                                  onUpdateStatus(item.id, st);
+                                } else {
+                                  onToggleItem(item.id);
+                                }
+                              }}
+                              className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border ${
+                                isCurrent ? "shadow-[1px_1px_0px_#0f172a]" : "border-slate-300"
+                              } ${colorMap[st]}`}
+                            >
+                              {labelMap[st]}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>

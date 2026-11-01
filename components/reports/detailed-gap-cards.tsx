@@ -15,6 +15,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { DetailedInformationGap, GapPriority, GapStatusType } from "@/types";
+import { CharacterAvatar } from "@/components/shinchan/character-avatar";
 
 interface DetailedGapCardsProps {
   gaps: DetailedInformationGap[];
@@ -127,6 +128,24 @@ export function DetailedGapCards({ gaps, className = "" }: DetailedGapCardsProps
             <option value="medium">Medium</option>
             <option value="low">Low</option>
           </select>
+        </div>
+      </div>
+
+      {/* Bo-chan Information Gap Scout Mascot Banner */}
+      <div className="rounded-2xl border-2 border-slate-900 bg-[#dcfce7] p-4 flex items-center gap-3.5 shadow-[2px_2px_0px_#0f172a]">
+        <CharacterAvatar character="bochan" size="sm" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-display font-black text-xs text-slate-950">
+              Bo-chan &bull; Information Gap Scout
+            </span>
+            <span className="text-[10px] font-mono font-bold bg-[#15803d] text-white px-2 py-0.5 rounded-full">
+              AI-ASSISTED FINDINGS
+            </span>
+          </div>
+          <p className="text-xs text-slate-800 font-sans font-bold mt-0.5 leading-snug">
+            &ldquo;Something may be missing from this investigation. Gaps are AI-assisted analytical findings for verification, not established facts.&rdquo;
+          </p>
         </div>
       </div>
 

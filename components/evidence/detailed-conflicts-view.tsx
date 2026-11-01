@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { DetailedConflictItem, ConflictCategory, ComparisonDimension } from "@/types";
+import { CharacterAvatar } from "@/components/shinchan/character-avatar";
 
 interface DetailedConflictsViewProps {
   conflicts: DetailedConflictItem[];
@@ -110,6 +111,24 @@ export function DetailedConflictsView({ conflicts, className = "" }: DetailedCon
         <span className="font-semibold">
           <strong className="font-black">Impartiality Protocol:</strong> DARKSPOT AI never automatically decides which source is correct. Both sides of the evidence are preserved side-by-side for transparent human cross-examination.
         </span>
+      </div>
+
+      {/* Masao Conflict & Variance Mascot Banner */}
+      <div className="rounded-xl border-2 border-slate-900 bg-[#fef3c7] p-3.5 flex items-center gap-3 shadow-[2px_2px_0px_#0f172a]">
+        <CharacterAvatar character="masao" size="sm" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-display font-black text-xs text-slate-950">
+              Masao &bull; Conflict Auditor
+            </span>
+            <span className="text-[10px] font-mono font-bold text-amber-900 bg-amber-200 px-2 py-0.5 rounded-full border border-amber-300">
+              UNCERTAINTY WARNING
+            </span>
+          </div>
+          <p className="text-xs text-slate-800 font-sans font-medium mt-0.5 leading-snug">
+            &ldquo;Wait! These sources contain contrasting statements or dates. Both claims and their exact source quotes are shown side-by-side below.&rdquo;
+          </p>
+        </div>
       </div>
 
       {/* Filter Controls */}

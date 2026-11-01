@@ -33,7 +33,7 @@ export const CHARACTER_DATA: Record<ShinchanCharacter, CharacterMeta> = {
     color: "bg-[#ffd84d]",
     borderColor: "border-[#101010]",
     quote: "Ready to investigate what's missing? Let's uncover the truth!",
-    avatarSrc: "/assets/shinchan/shinchan/shinchan_avatar.png",
+    avatarSrc: "/assets/shinchan/Sinchan.png",
   },
   kazama: {
     name: "Kazama (Toru)",
@@ -43,7 +43,7 @@ export const CHARACTER_DATA: Record<ShinchanCharacter, CharacterMeta> = {
     color: "bg-[#e0f2fe]",
     borderColor: "border-[#0369a1]",
     quote: "Methodology first! We must verify every claim against primary sources.",
-    avatarSrc: "/assets/shinchan/kazama/kazama_avatar.png",
+    avatarSrc: "/assets/shinchan/Kazama.png",
   },
   bochan: {
     name: "Bo-chan (Boo)",
@@ -53,7 +53,7 @@ export const CHARACTER_DATA: Record<ShinchanCharacter, CharacterMeta> = {
     color: "bg-[#dcfce7]",
     borderColor: "border-[#15803d]",
     quote: "Something... is missing from this investigation. Look between the lines.",
-    avatarSrc: "/assets/shinchan/bochan/bochan_avatar.png",
+    avatarSrc: "/assets/shinchan/Bo-chan.png",
   },
   masao: {
     name: "Masao (Sato)",
@@ -63,7 +63,7 @@ export const CHARACTER_DATA: Record<ShinchanCharacter, CharacterMeta> = {
     color: "bg-[#fef3c7]",
     borderColor: "border-[#b45309]",
     quote: "Wait! These two sources say completely different things... let me flag this!",
-    avatarSrc: "/assets/shinchan/masao/masao_avatar.png",
+    avatarSrc: "/assets/shinchan/Masao.png",
   },
   nene: {
     name: "Nene (Sakurada)",
@@ -73,7 +73,7 @@ export const CHARACTER_DATA: Record<ShinchanCharacter, CharacterMeta> = {
     color: "bg-[#fce7f3]",
     borderColor: "border-[#be185d]",
     quote: "Let's organize the verification checklist and get every item signed off!",
-    avatarSrc: "/assets/shinchan/nene/nene_avatar.png",
+    avatarSrc: "/assets/shinchan/Nene.png",
   },
   himawari: {
     name: "Himawari",
@@ -83,7 +83,7 @@ export const CHARACTER_DATA: Record<ShinchanCharacter, CharacterMeta> = {
     color: "bg-[#ffedd5]",
     borderColor: "border-[#c2410c]",
     quote: "Ta-da! High-coverage dossier completed without missing blindspots!",
-    avatarSrc: "/assets/shinchan/decorations/shiro_avatar.png", // fallback to cute pet squad
+    avatarSrc: "/assets/shinchan/Sinchan.png",
   },
   shiro: {
     name: "Shiro",
@@ -125,7 +125,7 @@ export function CharacterAvatar({
       <div
         className={cn(
           sizeClasses,
-          "rounded-2xl border-2 border-[#101010] shadow-[2px_2px_0px_#101010] overflow-hidden relative flex items-center justify-center transition-transform hover:-translate-y-0.5",
+          "rounded-2xl border-2 border-[#101010] shadow-[2px_2px_0px_#101010] overflow-hidden relative flex items-center justify-center transition-transform hover:-translate-y-0.5 p-1",
           meta.color
         )}
       >
@@ -134,7 +134,7 @@ export function CharacterAvatar({
           alt={meta.name}
           width={128}
           height={128}
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-contain"
           priority
         />
       </div>

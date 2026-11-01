@@ -80,6 +80,13 @@ ${result.verification_checklist.map((item) => `- [${item.completed ? "x" : " "}]
           </>
         )}
       </Button>
+
+      {copied && (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ffedd5] border border-orange-300 text-orange-950 text-[10px] font-mono font-bold animate-bounce">
+          <Share2 className="w-3 h-3 text-[#e85a9b]" />
+          <span>Himawari: Dossier Copied! ✨</span>
+        </span>
+      )}
     </div>
   );
 }

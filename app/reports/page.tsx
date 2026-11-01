@@ -22,10 +22,10 @@ import { WorkspaceLayout } from "@/components/layout/workspace-layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  getStoredInvestigations, 
-  deleteInvestigation, 
+  getAllInvestigations, 
+  deleteInvestigationSafely, 
   type InvestigationRecord 
-} from "@/lib/store/investigations";
+} from "@/lib/repository";
 import { formatDate } from "@/lib/utils";
 
 export default function ReportsPage() {
@@ -35,11 +35,14 @@ export default function ReportsPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
-    const list = getStoredInvestigations();
-    setInvestigations(list);
-    if (list.length > 0 && list[0]) {
-      setSelectedInv(list[0]);
+    async function loadData() {
+      const list = await getAllInvestigations();
+      setInvestigations(list);
+      if (list.length > 0 && list[0]) {
+        setSelectedInv(list[0]);
+      }
     }
+    loadData();
   }, []);
 
   const handleCopyMarkdown = (inv: InvestigationRecord) => {
@@ -49,16 +52,16 @@ export default function ReportsPage() {
 **Dark Spot Index:** ${inv.result.metrics.darkSpotIndex} / 100  
 
 ## Executive Summary
-${inv.result.structured_summary.map((s, i) => `${i + 1}. ${s.fact}`).join("\n")}
+${inv.result.structured_summary.map((s: { fact: string }, i: number) => `${i + 1}. ${s.fact}`).join("\n")}
 
 ## Critical Information Gaps (${inv.result.information_gaps.length})
-${inv.result.information_gaps.map((g) => `- [${g.severity}] **${g.gap_title}**: ${g.description}`).join("\n")}
+${inv.result.information_gaps.map((g: { severity: string; gap_title: string; description: string }) => `- [${g.severity}] **${g.gap_title}**: ${g.description}`).join("\n")}
 
 ## Contradictions (${inv.result.conflicts.length})
-${inv.result.conflicts.map((c) => `- **${c.issue}**: Claim A: "${c.claim_a}" vs Claim B: "${c.claim_b}"`).join("\n")}
+${inv.result.conflicts.map((c: { issue: string; claim_a: string; claim_b: string }) => `- **${c.issue}**: Claim A: "${c.claim_a}" vs Claim B: "${c.claim_b}"`).join("\n")}
 
 ## Verification Checklist
-${inv.result.verification_checklist.map((item) => `- [${item.completed ? "x" : " "}] Priority ${item.priority}: ${item.action}`).join("\n")}
+${inv.result.verification_checklist.map((item: { completed?: boolean; priority: number; action: string }) => `- [${item.completed ? "x" : " "}] Priority ${item.priority}: ${item.action}`).join("\n")}
 `;
 
     navigator.clipboard.writeText(md);
@@ -244,7 +247,7 @@ ${inv.result.verification_checklist.map((item) => `- [${item.completed ? "x" : "
                     Key Omissions & Dark Spots
                   </span>
                   <div className="space-y-2">
-                    {selectedInv.result.information_gaps.map((gap, gIdx) => (
+                    {selectedInv.result.information_gaps.map((gap: { gap_title: string; severity: string; description: string }, gIdx: number) => (
                       <div key={gIdx} className="p-3.5 rounded-xl border-2 border-slate-900 bg-white shadow-[2px_2px_0px_#0f172a] space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="font-extrabold text-xs text-slate-950 font-display">{gap.gap_title}</span>
@@ -262,7 +265,7 @@ ${inv.result.verification_checklist.map((item) => `- [${item.completed ? "x" : "
                     Contradictory Claims
                   </span>
                   <div className="space-y-2">
-                    {selectedInv.result.conflicts.map((conf, cIdx) => (
+                    {selectedInv.result.conflicts.map((conf: { issue: string; claim_a: string; claim_b: string }, cIdx: number) => (
                       <div key={cIdx} className="p-3.5 rounded-xl border-2 border-slate-900 bg-white shadow-[2px_2px_0px_#0f172a] space-y-1.5">
                         <span className="font-bold text-xs text-slate-900">{conf.issue}</span>
                         <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-700 pt-1">

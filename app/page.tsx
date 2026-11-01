@@ -190,11 +190,11 @@ export default function LandingPage() {
                     </span>
                   </div>
 
-                  {/* Character Illustration Frame */}
-                  <div className="relative rounded-2xl border-2 border-slate-900 bg-[#ffd84d] overflow-hidden aspect-[4/3] flex items-center justify-center p-2 shadow-[2px_2px_0px_#0f172a]">
+                  {/* Official Shinchan Hackathon Mascot & Logo Frame */}
+                  <div className="relative rounded-2xl border-2 border-slate-900 bg-white overflow-hidden aspect-[16/10] flex items-center justify-center p-3 shadow-[2px_2px_0px_#0f172a]">
                     <img
-                      src="/assets/shinchan/shinchan/shinchan_avatar.png"
-                      alt="Shinchan Lead Detective Mascot"
+                      src="/assets/Logo_slogan.webp"
+                      alt="Shinchan DEVENGERS Hackathon"
                       className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                     />
                   </div>
@@ -505,6 +505,43 @@ export default function LandingPage() {
             <div className="p-4 rounded-xl border-2 border-slate-900 bg-white flex flex-col items-center justify-center text-center space-y-1 shadow-[2px_2px_0px_#0f172a]">
               <span className="font-bold text-slate-950">Zod Strict</span>
               <span className="text-[10px] text-slate-600">Validation</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8.5 Compact Winning Hackathon Experience Section */}
+      <section className="py-12 border-t-2 border-slate-900 bg-[#ffd84d]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border-3 border-slate-900 bg-white p-6 sm:p-8 shadow-[5px_5px_0px_#101010] flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 max-w-xl text-left">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="bg-[#101010] text-[#ffd84d] font-mono font-black text-xs px-2.5 py-0.5 rounded-lg">
+                  DEVENGERS
+                </span>
+                <span className="bg-[#e85a9b] text-white font-mono font-bold text-xs px-2.5 py-0.5 rounded-lg border border-slate-900">
+                  Shinchan Online Hackathon 2026
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-display font-black text-slate-950 tracking-tight">
+                Powered by curiosity. Driven by evidence.
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-700 font-sans font-medium leading-relaxed">
+                DARKSPOT AI bridges the gap between chaotic multi-source data and rock-solid factual clarity. Built by team DEVENGERS for the official Shinchan Online Hackathon 2026.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <Button
+                asChild
+                size="lg"
+                className="h-12 px-6 bg-[#ffd84d] hover:bg-[#facc15] text-slate-950 font-display font-black text-xs rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] active:translate-x-0.5 active:translate-y-0.5"
+              >
+                <Link href="/research/new" className="flex items-center gap-2">
+                  <span>Start Investigation Now</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

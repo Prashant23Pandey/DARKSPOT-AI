@@ -18,7 +18,11 @@ import {
   Share2,
   Calendar,
   Sparkles,
-  Download
+  Download,
+  Pencil,
+  Check,
+  X,
+  Trash2
 } from "lucide-react";
 import { WorkspaceLayout } from "@/components/layout/workspace-layout";
 import { Button } from "@/components/ui/button";
@@ -37,13 +41,18 @@ import { ExtractedClaimsTable } from "@/components/evidence/extracted-claims-tab
 import { 
   getStoredInvestigations, 
   getInvestigationById, 
-  saveInvestigation,
   DEFAULT_INVESTIGATIONS,
   type InvestigationRecord 
 } from "@/lib/store/investigations";
+import { 
+  updateInvestigationTitle, 
+  updateVerificationTask, 
+  deleteInvestigationSafely 
+} from "@/lib/repository";
 import { formatDate } from "@/lib/utils";
 
 export default function InvestigationWorkspacePage() {
+  const router = useRouter();
   const params = useParams();
   const rawId = params?.id;
   const id = typeof rawId === "string" ? rawId : Array.isArray(rawId) ? rawId[0] : "";
@@ -57,25 +66,36 @@ export default function InvestigationWorkspacePage() {
   });
 
   const [activeTab, setActiveTab] = useState<string>("gaps");
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (id) {
       const inv = getInvestigationById(id);
       if (inv) {
         setInvestigation(inv);
+        setEditedTitle(inv.topic);
         return;
       }
     }
     const all = getStoredInvestigations();
     if (all.length > 0 && all[0]) {
       setInvestigation(all[0]);
+      setEditedTitle(all[0].topic);
     }
   }, [id]);
 
-  const handleToggleChecklist = (checkId: string) => {
+  const handleToggleChecklist = async (checkId: string) => {
     if (!investigation) return;
+    const target = investigation.result.verification_checklist.find((item) => item.id === checkId);
+    if (!target) return;
+    const newCompleted = !target.completed;
+    const newStatus = newCompleted ? ("verified" as const) : ("pending" as const);
+
     const updatedChecklist = investigation.result.verification_checklist.map((item) =>
-      item.id === checkId ? { ...item, completed: !item.completed } : item
+      item.id === checkId ? { ...item, completed: newCompleted, status: newStatus } : item
     );
 
     const updatedInv: InvestigationRecord = {
@@ -87,7 +107,50 @@ export default function InvestigationWorkspacePage() {
     };
 
     setInvestigation(updatedInv);
-    saveInvestigation(updatedInv);
+    await updateVerificationTask(investigation.id, checkId, {
+      completed: newCompleted,
+      status: newStatus,
+    });
+  };
+
+  const handleUpdateTaskStatus = async (
+    checkId: string, 
+    status: "pending" | "in_progress" | "verified" | "unable_to_verify"
+  ) => {
+    if (!investigation) return;
+    const updatedChecklist = investigation.result.verification_checklist.map((item) =>
+      item.id === checkId ? { ...item, status, completed: status === "verified" } : item
+    );
+
+    const updatedInv: InvestigationRecord = {
+      ...investigation,
+      result: {
+        ...investigation.result,
+        verification_checklist: updatedChecklist,
+      },
+    };
+
+    setInvestigation(updatedInv);
+    await updateVerificationTask(investigation.id, checkId, {
+      status,
+      completed: status === "verified",
+    });
+  };
+
+  const handleSaveTitle = async () => {
+    if (!investigation || !editedTitle.trim()) return;
+    const newTitle = editedTitle.trim();
+    const updated = { ...investigation, topic: newTitle };
+    setInvestigation(updated);
+    setIsEditingTitle(false);
+    await updateInvestigationTitle(investigation.id, newTitle);
+  };
+
+  const handleDelete = async () => {
+    if (!investigation) return;
+    setIsDeleting(true);
+    await deleteInvestigationSafely(investigation.id);
+    router.push("/dashboard");
   };
 
   if (!investigation) {
@@ -151,6 +214,35 @@ export default function InvestigationWorkspacePage() {
             </Button>
 
             <ExportDossierModal result={result} />
+
+            {deleteConfirm ? (
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="h-9 px-3 text-xs bg-rose-600 hover:bg-rose-700 text-white font-black border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]"
+                >
+                  {isDeleting ? "Deleting..." : "Confirm Delete"}
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => setDeleteConfirm(false)}
+                  className="h-9 px-2 text-xs bg-white text-slate-800 font-bold border-2 border-slate-900"
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                onClick={() => setDeleteConfirm(true)}
+                className="h-9 px-2.5 text-xs bg-white hover:bg-rose-50 text-rose-600 font-bold border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]"
+                title="Delete Investigation Dossier"
+              >
+                <Trash2 className="w-4 h-4 text-rose-600" />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -179,9 +271,60 @@ export default function InvestigationWorkspacePage() {
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-4xl font-black font-display text-slate-950 tracking-tight">
-                {investigation.topic}
-              </h1>
+              {/* Editable Title Header */}
+              {isEditingTitle ? (
+                <div className="flex items-center gap-2 max-w-2xl py-1">
+                  <input
+                    type="text"
+                    value={editedTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                    className="w-full text-xl sm:text-2xl font-black font-display text-slate-950 px-3 py-1.5 border-2 border-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fde047] shadow-[2px_2px_0px_#0f172a]"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveTitle();
+                      if (e.key === "Escape") {
+                        setIsEditingTitle(false);
+                        setEditedTitle(investigation.topic);
+                      }
+                    }}
+                  />
+                  <Button
+                    size="sm"
+                    onClick={handleSaveTitle}
+                    className="h-10 px-3.5 bg-[#a3e635] hover:bg-[#84cc16] text-slate-950 font-black border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]"
+                    title="Save title"
+                  >
+                    <Check className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setIsEditingTitle(false);
+                      setEditedTitle(investigation.topic);
+                    }}
+                    className="h-10 px-3 bg-white hover:bg-slate-100 text-slate-900 font-bold border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]"
+                    title="Cancel"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 group">
+                  <h1 className="text-2xl sm:text-4xl font-black font-display text-slate-950 tracking-tight">
+                    {investigation.topic}
+                  </h1>
+                  <button
+                    onClick={() => {
+                      setEditedTitle(investigation.topic);
+                      setIsEditingTitle(true);
+                    }}
+                    className="opacity-70 hover:opacity-100 p-1.5 rounded-lg border border-slate-300 hover:border-slate-900 bg-white hover:bg-[#fef08a] transition shadow-[1px_1px_0px_#0f172a]"
+                    title="Edit Dossier Title (persists to Supabase / store)"
+                  >
+                    <Pencil className="w-4 h-4 text-slate-800" />
+                  </button>
+                </div>
+              )}
 
               {/* Telemetry line in Space Mono (matching user reference) */}
               <div className="text-xs sm:text-sm font-mono text-slate-700 font-medium tracking-tight">
@@ -312,6 +455,7 @@ export default function InvestigationWorkspacePage() {
               <VerificationChecklistView
                 checklist={result.verification_checklist}
                 onToggleItem={handleToggleChecklist}
+                onUpdateStatus={handleUpdateTaskStatus}
               />
             </TabsContent>
 
